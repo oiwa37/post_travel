@@ -1,0 +1,345 @@
+@charset "UTF-8";
+/*共通部分*/
+html{
+  font-size:100%;
+}
+body{
+  /* font-family: 'Kiwi Maru', serif; */
+  /* font-family: 'Kaisei Decol', serif; */
+  /*font-family: 'Klee One', cursive; */
+  font-family:"Yu Gothic Medium","游ゴシック Medium",YuGothic,"游ゴシック体","ヒイラギ角ゴ Pro W3",sans-serif;
+  line-height: 1.7;
+  color:rgb(0, 0, 0);
+  background-color: #eaf6fd;
+
+}
+a{
+  text-decoration:none;
+}
+img{
+  max-width:100%;
+}
+
+
+
+
+/* ヘッダー部分 */
+.header{
+  font-family: 'Kiwi Maru', serif;
+  width:100%;
+  height: 100px;
+  background-color: rgb(255, 255, 255);
+  padding: 10px 50px; 
+  box-sizing: border-box; /* padding分を含んで幅を100%にするため */
+  /* position: fixed; 
+  top: 0; 
+  left: 0; */
+  align-items: center;
+  border-bottom:1px solid #c7c0c0b9 ;
+
+}
+
+
+.header-left{
+  float:left;
+  display:flex;
+  flex-direction: column;
+  margin-left: 20px;
+}
+.header-left h1{
+  font-size:36px;
+  color:#111111;
+  line-height: 48px;
+  display: inline-block;
+  background-image: linear-gradient(transparent 50% ,#ff6 50%);
+  padding-bottom: 0,25rem;
+}
+.header-left p{
+  color:#111111;
+  display: inline-block;
+  padding: 5px 0 0 10px;
+}
+
+
+.gnav{
+  font-size: 20px;
+  margin:20px 0 0 450px;
+  display: inline-block;
+}
+.menu {
+  display: flex;    
+}
+.menu li {
+  list-style: none; 
+  margin-right: 70px;
+}
+.menu li :link{
+  color: #000000;
+}
+.menu li :visited{
+  color: #000000;
+}
+.menu li :hover{
+  color: #f74020;
+  transition:.3s;
+}
+
+.menu a{
+  border-bottom: 3px dotted #ffafa0;
+}
+
+
+
+.header-right{
+  float: right;
+  margin-right:20px
+}
+
+
+.logout {
+  display: inline-block;
+  color: #c5a3cb;
+  border: 2px solid #c5a3cb;
+}
+
+
+
+
+
+/* コンテンツ */
+.content{
+  background-color: #eaf6fd;
+  
+}
+.map{
+  width: 960px;
+}
+
+.japan{
+  background-color: #eaf6fd;
+  width:650px;
+  height:730px;
+  border-width:0.75px;
+  float: left;
+  margin: 20px 0 0 20px;
+}
+
+
+.cls-1{
+  fill: #e2eba3;
+  /* stroke:#000; */
+  stroke-linejoin:round;
+}
+
+
+.cls-1:hover{
+  fill:#f7c6bd;
+}
+
+.cls-4{
+  fill:#c5a3cb;
+
+  stroke-linejoin:round;
+}
+
+
+
+/* 記事部分 */
+.container{
+  background-color: #ebe0ec;
+  border-radius: 1%/2%;
+  float: right;
+  width:900px;
+  height:760px;
+  margin: 10px 30px 20px 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* マイページの記事部分 */
+.myarticle h2{
+  font-family: 'Kiwi Maru', serif;
+  margin:10px 0 10px 15px;
+}
+
+table{
+  border-radius: 1%/2%;
+  width: 850px;
+  height: 100px;
+  background-color: #f6f2f7;
+  margin:0 20px 10px;
+  padding: 6px 10px ;
+
+}
+
+table td{
+  display: flex;
+}
+
+table .title{
+  font-size: 1.3rem;
+  border-bottom:1.5px dashed #daccdb;
+}
+table .title :link{
+  color: #000;
+}
+table .title :visited{
+  color: #000;
+}
+table .title :hover{
+  color:#7aa13c;
+  transition: 0.1s;
+}
+table .prefecture{
+  color: #f74020;
+  float: left;
+}
+table .detail{
+  margin: 10px 0;
+}
+table .post-at{
+  float: right;
+}
+
+table .fa-deco{
+  color: #f74020;
+}
+
+
+/* 共有の記事部分 */
+.allpost{
+  background-color: #f5e8be;
+  border-radius: 1%/2%;
+  float: right;
+  width:900px;
+  height:760px;
+  margin: 10px 30px 20px 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.article h2{
+  font-family: 'Kiwi Maru', serif;
+  margin:10px 0 10px 15px;
+}
+
+.article table{
+  border-radius: 1%/2%;
+  width: 850px;
+  height: 100px;
+  background-color: #f3f1ea;
+  margin:0 20px 10px;
+  padding: 6px 10px ;
+}
+.article table .title{
+  font-size: 1.3rem;
+  border-bottom:1.5px dashed #daca99;
+}
+
+
+
+/* 写真の記事投稿 */
+.all-pictures{
+  font-family: 'Kiwi Maru', serif;
+  background-color: rgb(210, 240, 228);
+  border-radius: 1%/2%;
+  float: right;
+  width:900px;
+  height:660px;
+  margin: 10px 30px 20px 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+}
+.all-pictures h2{
+  margin:10px 0 10px 15px;
+}
+.pictures  ol{
+  list-style:none;
+}
+.pictures{
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  /* grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 320px 320px; */
+  margin: 0 5px 0 5px;
+}
+.image{
+  width:212px;
+  height: auto;
+}
+.picture{
+  background-color: rgb(255, 255, 255);
+  width:220px;
+  padding:3px 3px 3px 3px;
+  margin-bottom: 5px;
+  border-radius: 2px /3px;
+}
+
+
+
+
+
+
+/* ページネーション */
+a.page_number:visited {
+  color: black; text-decoration:none 
+}
+.page{
+  font-family: 'Kiwi Maru', serif;
+  font-size: 20px;  
+  display: flex;
+  justify-content: center;
+  margin: 15px;
+}
+
+.page a,span,
+.page .current {
+  width: 40px;
+  height: 40px;
+  margin: 0 10px;
+  padding-top: 3px;
+  text-align: center;
+  background: #fff;
+  color: black;
+  border-radius:50% ;
+}
+.first_last_page {
+  width: 40px;
+  height: 40px;
+  margin: 0 10px;
+  text-align: center;
+  background: #fff;
+  color: black;
+  border-radius:50% ;
+}
+
+.page a:hover{
+  background-color:#f0f0f0;
+  color: black;
+}
+.page span:hover{
+  background-color:#f0f0f0;
+  color: black;
+}
+
+
+
+
+/* フッター */
+.footer{
+  background-color: #fff;
+}
+
+
+
+/* clear用CSS */
+.clearfix::after{
+  content:"";
+  display:block;
+  clear:both;
+} 
+
