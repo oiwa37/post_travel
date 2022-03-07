@@ -1,9 +1,0 @@
-# 特定のファイルを無視
-env.php
-jquery-3.6.0.min.js
-paginathing.min.js
-
-# 特定のディレクトリを無視
-imageResize
-paginathing-master
-images
