@@ -1,0 +1,9 @@
+# 特定のファイルを無視
+/Applications/MAMP/htdocs/post_travel/config/env.php
+/Applications/MAMP/htdocs/post_travel/public/jquery-3.6.0.min.js
+/Applications/MAMP/htdocs/post_travel/public/paginathing.min.js
+
+# 特定のディレクトリを無視
+/Applications/MAMP/htdocs/post_travel/public/imageResize
+/Applications/MAMP/htdocs/post_travel/public/paginathing-master
+/Applications/MAMP/htdocs/post_travel/images

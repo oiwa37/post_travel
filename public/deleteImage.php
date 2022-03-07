@@ -4,7 +4,7 @@ ini_set( 'error_reporting', E_ALL );
 
 session_start();
 require_once '../classes/article_class.php';
-require_once '../dbconnect.php';
+require_once '../config/dbconnect.php';
 
 
 //ログインしているか判定し、セッションが切れていたらログインし直してもらう

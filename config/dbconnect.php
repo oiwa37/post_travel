@@ -2,7 +2,7 @@
 
 <?php
 require_once 'env.php';
-require_once 'functions.php';
+require_once '../functions/functions.php';
 
 //DB接続関連
 Class Dbc{

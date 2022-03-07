@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once '../functions.php';
+require_once '../functions/functions.php';
 require_once '../classes/article_class.php';
 require_once '../classes/login_class.php';
 
