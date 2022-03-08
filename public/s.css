@@ -21,7 +21,7 @@ img{
 }
 
 
-
+/* マイページ・投稿一覧画面 */
 
 /* ヘッダー部分 */
 .header{
@@ -35,7 +35,7 @@ img{
   top: 0; 
   left: 0; */
   align-items: center;
-  border-bottom:1px solid #c7c0c0b9 ;
+  border-bottom:1px solid #e3e8ee ;
 
 }
 
@@ -81,7 +81,7 @@ img{
 }
 .menu li :hover{
   color: #f74020;
-  transition:.3s;
+  transition:.5s;
 }
 
 .menu a{
@@ -332,6 +332,16 @@ a.page_number:visited {
 /* フッター */
 .footer{
   background-color: #fff;
+  width: 100%;
+  height: 40px;
+  position: absolute;
+  bottom: 0;
+  border-top:1px solid #e3e8ee ;
+
+}
+.footer p{
+  text-align: center;
+  padding-top:7px ;
 }
 
 

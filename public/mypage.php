@@ -8,7 +8,7 @@ require_once '../classes/article_class.php';
 require_once '../classes/login_class.php';
 
 
-//ログインしているか判定し、していなければ新規登録画面へ
+//ログインしているか判定し、していなければ新規登録画面へ ｓ
 $login = new LoginClass('member');
 $result = $login->checkLogin();
 if(!$result){
@@ -88,7 +88,7 @@ $filterData = $art->filter($page, $per_page, $articleData);
         </div>
     </header> 
     
-    <div class ="cotent clearfix" >
+    <div class ="content clearfix" >
       <div class = "map">
     <div class ="japan">
       <svg id="map" data-name="japan" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 773.6 846.4">
@@ -174,13 +174,11 @@ $filterData = $art->filter($page, $per_page, $articleData);
 
 
 
-
-    <footer>
-        <div class ="footer">
-          
-          フッター
-        </div>
-    </footer> 
+<footer>
+  <div class ="footer">
+    <p>&copy; 2022 oiwa</p>
+  </div>
+</footer> 
 
   <!-- javascript
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
