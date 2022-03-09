@@ -11,6 +11,13 @@ if($result){
     return;
 }
 
+$err = $_SESSION;
+
+//配列を消す(エラーメッセージを一度のみ表示に)
+// $_SESSION = array();
+//セッションファイルを消す
+// session_destroy();
+
 $login_err = isset($_SESSION['login_err']) ? $_SESSION['login_err'] : null;
 unset($_SESSION['login_err']);
 
@@ -54,28 +61,40 @@ unset($_SESSION['login_err']);
 
 <div class= "register-form">
     <h2>新規登録</h2>
-        <?php if(isset($login_err)):?>
-                    <p><?php echo $login_err;?></p>
-                <?php endif;?>
+        <?php if(isset($err['msg'])):?>
+                    <p><?php echo $err['msg'];?></p>
+                    <?php endif;?>
     <form method="POST" action ="register_done.php">
         <p>
             <label for="username">ユーザ名&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:</label>
             <input type="text" name="username" class="form" placeholder="Username">
+            <?php if(isset($err['username'])):?>
+                <p class="err-msg"><?php echo $err['username'];?></p>
+            <?php endif;?>
         </p>
         <p>
             <label for="email">メールアドレス:</label>
             <input type="email" name="email" class="form" placeholder="Email">
+            <?php if(isset($err['email'])):?>
+                <p class="err-msg"><?php echo $err['email'];?></p>
+            <?php endif;?>
         </p>
         <p>
             <label for="password">パスワード&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:</label>
             <input type="password" name="password" class="form" placeholder="Password">
+            <?php if(isset($err['pass'])):?>
+                <p class="err-msg"><?php echo $err['pass'];?></p>
+            <?php endif;?>
         </p>
         <p>
             <label for="password_conf">パスワード確認:</label>
             <input type="password" name="password_conf" class="form" placeholder="Password">
+            <?php if(isset($err['pass-conf'])):?>
+                <p class="err-msg"><?php echo $err['pass-conf'];?></p>
+            <?php endif;?>
         </p>
         <input type="hidden" name="csrf_token" value=<?php echo h(setToken());?>> 
-        <input type="submit" value="新規登録" class ="register-button2">    
+        <input type="submit" value="新規登録" class ="register-button2">   
     </form>
     <a href="login_form.php" class="login-button">ログインはこちら</a>
 </div>

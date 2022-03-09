@@ -165,6 +165,7 @@ $filterData = $art->filter($page, $per_page, $articleData);
       <?php endforeach; ?>
 
   <div>
+    
   <?php $art->paging($max_page, $page); ?>
   </div>
     </div>

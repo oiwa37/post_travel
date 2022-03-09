@@ -2,7 +2,7 @@
 ini_set( 'display_errors', 1 );
 ini_set( 'error_reporting', E_ALL );
 
-require_once '../config/dbconnect.php';
+require_once '/Applications/MAMP/htdocs/post_travel/config/dbconnect.php';
 
 Class Article extends Dbc{
     //新規投稿をDBに追加
@@ -20,9 +20,9 @@ Class Article extends Dbc{
             $stmt->bindValue(':prefecture',$article['prefecture'],PDO::PARAM_STR);
             $stmt->bindValue(':content',$article['content'],PDO::PARAM_STR);
             $stmt->bindValue(':post_status',$article['post_status'],PDO::PARAM_INT);
-            $stmt->execute();
+            $result = $stmt->execute();
             $dbh->commit();
-            echo '投稿完了';
+            return $result;
         }catch(PDOException $e){
             $dbh->rollBack();
             echo '接続失敗'.$e->getMessage();
@@ -65,8 +65,12 @@ Class Article extends Dbc{
         
         if(empty($article['content'])){
             exit('本文を入力して');
-        }
-    }    
+        }   
+    }
+
+
+
+
 
     //画像のバリデーション。ファイルを一時ファイルから指定ファイルへ移動しDBに記事保存
     public function imageValidate($article,$image){
@@ -140,7 +144,7 @@ Class Article extends Dbc{
             $stmt->bindValue(':post_status',$article['post_status'],PDO::PARAM_INT);
             $result = $stmt->execute();
             $dbh->commit();
-            echo '投稿完了';
+            // echo '投稿完了';
             return $result;
         }catch(PDOException $e){
             $dbh->rollBack();

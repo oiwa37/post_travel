@@ -3,11 +3,12 @@ ini_set( 'display_errors', 1 );
 ini_set( 'error_reporting', E_ALL );
 
 session_start();
+require_once '../functions/functions.php';
 require_once '../classes/login_class.php';
 
-$err = [];
 
 //トークンを受け取り、値が一致しているか確認
+
 $token = filter_input(INPUT_POST,'csrf_token');
 if(!isset($_SESSION['csrf_token'])||$token !==$_SESSION['csrf_token']){
     exit('不正なリクエストです');
@@ -16,29 +17,40 @@ if(!isset($_SESSION['csrf_token'])||$token !==$_SESSION['csrf_token']){
 unset($_SESSION['csrf_token']);
 
 
+//エラーメッセージ
+$err = [];
+
 //バリデーション
 if(!$username = filter_input(INPUT_POST,'username')){
-    $err[] = 'ユーザー名を入力して下さい。';
+    $err['username'] = 'ユーザー名を入力して下さい。';
 }
 $email = filter_input(INPUT_POST,'email');
 if(!preg_match('/\A[\w\-\._]+@[\w\-\._]+\.[A-Za-z]+\z/',$email)){
-    $err[] = 'メールアドレスを正しく入力してください。';
+    $err['email'] = 'メールアドレスを正しく入力してください。';
 }
 $password = filter_input(INPUT_POST,'password');
 if(!preg_match("/\A[a-z\d]{6,15}+\z/i",$password)){
-    $err[] = 'パスワードは英数字6文字以上15文字以下にして下さい。';
+    $err['pass'] = 'パスワードは英数字6文字以上15文字以下にして下さい。';
 }
 $password_conf = filter_input(INPUT_POST,'password_conf');
 if($password !== $password_conf){
-    $err[] = 'パスワードが一致しません。';
+    $err['pass-conf'] = 'パスワードが一致しません。';
 }
+
+//エラーがあった場合＄_SESSION(連想配列)に＄errを入れてregister_form.phpに返す
+if(count($err) > 0){
+    $_SESSION = $err;
+    header('Location:register_form.php');
+    return;
+}
+
 
 $login = new LoginClass('member');
 //エラーがなければユーザ登録
 if(count($err) === 0){
     $hasCreated = $login->createUser($_POST);
     if(!$hasCreated){
-        $err[] = '登録に失敗しました。';
+        $err[] = '登録に失敗しました。再度やり直して下さい。';
     }
 }
 
@@ -48,22 +60,51 @@ if(count($err) === 0){
 
 ?>
 
+
 <!DOCTYPE HTML PUBLIC"=//W3C//DTD HTML 4.01 Transitional//EN>
 <html>
-<head>
-    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
-    <title>登録完了</title>
-    <link href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" rel="stylesheet">
-    <link href="style.css" rel="stylesheet">
-</head>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+        <title>旅の思い出</title>
+        <!-- リセットCSS -->
+        <link href="https://unpkg.com/ress/dist/ress.min.css" rel="stylesheet">
+        <!-- fontawesome -->
+        <link href="https://use.fontawesome.com/releases/v6.0.0/css/all.css" rel="stylesheet">
+        <!-- google fonts -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Kaisei+Decol:wght@700&family=Kiwi+Maru:wght@300&family=Klee+One&display=swap" rel="stylesheet">
+        <!-- bootstrap -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+        <!-- css -->
+        <link href="login.css" rel="stylesheet">
+    </head>
 <body>
-<?php if(count($err) > 0) : ?>
-    <?php foreach($err as $e) : ?>
-        <p><?php echo $e ?></p>
-    <?php endforeach ?>
-<?php else : ?>
-    <p>ユーザ登録が完了しました。</p>
-<?php endif ?>    
-    <a href="register_form.php">戻る</a>
+
+<header>
+    <div class ="header"> 
+        <div class ="header-left">
+            <a href ="top.php"><h1>旅の思い出</h1></a>
+            <p>日本地図に色を塗ろう</p>
+        </div>  
+        <nav class ="gnav">
+            <ol class="menu">
+                <li><a href ="register_form.php">新規登録</a> </li>
+                <li><a href ="login_form.php">ログイン</a> </li>
+                <li><a href ="#">ゲストログイン</a></li>
+            </ol>
+        </nav> 
+    </div>
+</header>
+<div class ="register-done">
+    <p>ユーザ登録が完了しました。</p> 
+    <a class="login-button" href ="login_form.php">ログインしてマイページへ</a>
+</div>
+    <footer>
+    <div class ="footer">
+        <p>&copy; 2022 oiwa</p>
+    </div>
+</footer> 
+
 </body>
 </html>

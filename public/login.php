@@ -1,14 +1,10 @@
 <?php 
-ini_set( 'display_errors', 1 );
-ini_set( 'error_reporting', E_ALL );
-
 session_start();
 require_once '../classes/login_class.php';
 
-
-
 //エラーメッセージ
 $err = [];
+
 
 //バリデーション
 if(!$email = filter_input(INPUT_POST,'email')){
@@ -18,23 +14,22 @@ if(!$password = filter_input(INPUT_POST,'password')){
     $err['password'] = 'パスワードを記入して下さい。';
 }
 
-
 //エラーがあった場合＄_SESSION(連想配列)に＄errを入れてlogin_form.phpに戻す
 if(count($err) > 0){
     $_SESSION = $err;
     header('Location:login_form.php');
     return;
 }
+
 //ログイン成功時
 $login = new LoginClass('member');
 $result = $login->login($email, $password);
-//ログイン失敗時
-if(!$result){
+if($result){
+    header('Location:mypage.php');
+}else{
     header('Location:login_form.php');
     return;
 }
-
-
 
 ?>
 
@@ -49,8 +44,5 @@ if(!$result){
     <link href="s.css" rel="stylesheet">
 </head>
 <body>
-    <h2>ログイン完了</h2>
-    <p>ログインしました。</p>
-    <a href="mypage.php">マイページへ</a>
 </body>
 </html>
