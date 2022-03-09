@@ -158,8 +158,7 @@ $filterData = $art->filter($page, $per_page, $articleData);
         <td class ="detail"><?php echo textLimit($column['content']); ?></td>
         <td class ="prefecture"><?php echo h($column['prefecture']); ?></td>
         <td class ="name"></td>
-        <td class ="post-at"><?php echo h($column['name']);?><?php echo h($column['post_at']);?><a href ="update_form.php?id_article=<?php echo $column['id_article']; ?>"><i class="fa-solid fa-pen-to-square fa-deco"></i></a>
-        <a href ="delete.php?id_article=<?php echo $column['id_article']; ?>"><i class="fa-regular fa-trash-can fa-deco"></i></a></td>
+        <td class ="post-at"><?php echo h($column['name']);?><?php echo h($column['post_at']);?>
         <!-- <td><img src="<?php echo $imageURL.($column['image']); ?>" alt="" ></td> -->
       </table>
     <?php endforeach; ?>

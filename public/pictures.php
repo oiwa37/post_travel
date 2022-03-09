@@ -147,7 +147,7 @@ $filterData = $art->filter($page, $per_page, $articleData);
       </div>
 
     <div class ="all-pictures">
-    <h2>写真の投稿</h2>
+    <h2>みんなの写真投稿</h2>
     <div class = "pictures">
     <?php foreach($filterData as $column): ?>
       <ol class = "picture">

@@ -19,9 +19,6 @@ session_destroy();
 
 ?>
 
-
-
-
 <!DOCTYPE HTML PUBLIC"=//W3C//DTD HTML 4.01 Transitional//EN>
 <html>
     <head>
@@ -61,22 +58,20 @@ session_destroy();
 
     <div class ="login-form">
         <h2>ログイン</h2>
-        <?php if(isset($err['msg'])):?>
-                <p><?php echo $err['msg'];?></p>
-                <?php endif;?>
+
     <form method="POST" action ="login.php">
         <p>
             <label for="email"></label>
             <input type="email" name="email" class="form" placeholder="Email">
             <?php if(isset($err['email'])):?>
-                <p><?php echo $err['email'];?></p>
+                <p class="err-msg"><?php echo $err['email'];?></p>
             <?php endif;?>
         </p>
         <p>
             <label for="password"></label>
             <input type="password" name="password" class ="form" placeholder="Password">
             <?php if(isset($err['password'])):?>
-                <p><?php echo $err['password'];?></p>
+                <p class="err-msg"><?php echo $err['password'];?></p>
             <?php endif;?>
         </p>
         <p>

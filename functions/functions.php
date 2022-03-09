@@ -1,6 +1,6 @@
+<link href="s.css" rel="stylesheet">
+
 <?php
-
-
 /**
  * 表示する記事の長さを制限する。
  * @param $text  整型したい文字列
@@ -70,7 +70,7 @@ function setToken(){
  * 県名のドロップダウンリスト
  */
 function select_prefecture(){
-    echo '<select name="prefecture">';
+    echo '<select name="prefecture" class="select-pref">';
     echo '<option value="北海道">北海道</option>';
     echo '<option value="青森県">青森県</option>';
     echo '<option value="岩手県">岩手県</option>';
