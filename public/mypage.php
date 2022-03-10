@@ -154,10 +154,10 @@ $filterData = $art->filter($page, $per_page, $articleData);
       <h2>自分の投稿</h2>
       <?php foreach($filterData as $column): ?>
       <table>
+        
       <td class ="title"><a href ="detail.php?id_article=<?php echo $column['id_article']; ?>">
-        <?php echo h($column['title']); ?></a></td>
+        <?php echo h($column['title']); ?></a></td><div class ="prefecture"><?php echo h($column['prefecture']); ?></div>
         <td class ="detail"><?php echo textLimit($column['content']); ?></td>
-        <td class ="prefecture"><?php echo h($column['prefecture']); ?></td>
         <td class ="post-at"><?php echo h($column['post_at']);?><a href ="update_form.php?id_article=<?php echo $column['id_article']; ?>"><i class="fa-solid fa-pen-to-square fa-deco"></i></a>
         <a href ="delete.php?id_article=<?php echo $column['id_article']; ?>"><i class="fa-regular fa-trash-can fa-deco"></i></a></td>
         <!-- <td><img src="<?php echo $imageURL.($column['image']); ?>" alt="" ></td> -->

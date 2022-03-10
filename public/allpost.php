@@ -153,10 +153,10 @@ $filterData = $art->filter($page, $per_page, $articleData);
         <h2>みんなの投稿</h2>
         <?php foreach($filterData as $column): ?>
       <table>
-        <td class ="title"><a href ="detail.php?id_article=<?php echo $column['id_article']; ?>">
+        <td class ="all-title"><a href ="detail.php?id_article=<?php echo $column['id_article']; ?>">
         <?php echo h($column['title']); ?></a></td>
+        <div class ="all-prefecture"><?php echo h($column['prefecture']); ?></div>
         <td class ="detail"><?php echo textLimit($column['content']); ?></td>
-        <td class ="prefecture"><?php echo h($column['prefecture']); ?></td>
         <td class ="name"></td>
         <td class ="post-at"><?php echo h($column['name']);?><?php echo h($column['post_at']);?>
         <!-- <td><img src="<?php echo $imageURL.($column['image']); ?>" alt="" ></td> -->

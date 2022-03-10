@@ -48,15 +48,15 @@ $id_member = $login_user['id_member'];
         </div>  
         <nav class ="gnav">
             <ol class="menu">
-                  <li><a href ="form.php">新規作成</a></li>
-                  <li><a href ="mypage.php">自分の投稿</a> </li>
-                  <li><a href ="allpost.php">みんなの投稿</a> </li>
-                  <li><a href ="pictures.php">写真の投稿</a> </li>
+                <li><a href ="form.php">新規作成</a></li>
+                <li><a href ="mypage.php">自分の投稿</a> </li>
+                <li><a href ="allpost.php">みんなの投稿</a> </li>
+                <li><a href ="pictures.php">写真の投稿</a> </li>
             </ol>
         </nav>
         <div class ="header-right">
-            <!-- <p>ログインユーザ:<?php echo h($login_user['name'])?></p> -->
-            <!-- <p>メールアドレス:<?php echo h($login_user['email'])?></p> -->
+            <p>ログインユーザ:<?php echo h($login_user['name'])?></p>
+            <p>メールアドレス:<?php echo h($login_user['email'])?></p>
             <div class ="logout">
                 <form method ="POST" action ="logout.php">
                     <input type ="submit" name ="logout" value ="ログアウト">

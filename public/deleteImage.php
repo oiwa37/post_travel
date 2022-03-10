@@ -20,7 +20,7 @@ $del_image = $_POST['deleteImage'];
 $file_dir = '/Applications/MAMP/htdocs/post_travel/images/';
 $deleteImage = $file_dir.$del_image; 
 //リサイズ後の画像
-$refile_dir = '/Applications/MAMP/htdocs/post_travel/public/newpost/';
+$refile_dir = '/Applications/MAMP/htdocs/post_travel/public/imageResize/';
 $deleteReImage = $refile_dir.'new'.$del_image;
 
 //DBに保存されている画像を削除する
@@ -44,9 +44,9 @@ $result = $del->deleteimage($del_image);
     <?php if(!empty($del_image)){ ?>
     <?php unlink($deleteImage); ?>
     <?php unlink($deleteReImage); ?>
-    <?php echo '画像削除しました!';?>
+    <?php header('Location:./mypage.php');?>
     <?php }else{ ?>
-    <?php echo '削除する画像がありません';} ?>
+    <?php header('Location:./mypage.php');} ?>
 
     <a href ="login_form.php">ホームへ</a>
 

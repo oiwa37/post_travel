@@ -22,6 +22,7 @@ Class Article extends Dbc{
             $stmt->bindValue(':post_status',$article['post_status'],PDO::PARAM_INT);
             $result = $stmt->execute();
             $dbh->commit();
+            header('Location:../mypage.php');
             return $result;
         }catch(PDOException $e){
             $dbh->rollBack();
@@ -45,7 +46,8 @@ Class Article extends Dbc{
             $stmt->bindValue(':id_article',$article['id_article'],PDO::PARAM_INT);
             $stmt->execute();
             $dbh->commit();
-            echo '更新完了';
+            header('Location:../mypage.php');
+            // echo '更新完了';
         }catch(PDOException $e){
             $dbh->rollBack();
             echo '接続失敗'.$e->getMessage();
@@ -89,7 +91,7 @@ Class Article extends Dbc{
         //ファイルのバリデーション
         //ファイルサイズは1MB未満か確認
         if ($filesize > 1048576 || $file_err == 2) {
-            array_push($err_msg, 'ファイルサイズを1MB未満にして下さい。');
+            array_push($err_msg, '投稿できるファイルサイズは1MB未満です。');
         }
         //拡張は画像形式化
         //許可する拡張子を指定
@@ -107,17 +109,15 @@ Class Article extends Dbc{
                 if(move_uploaded_file($tmp_path,$upload_dir.$save_filename)){
                     $this->fileSave($article,$save_filename);
                     $this->imageResize2($save_filename,$file_ext);
+                    header('Location:../mypage.php');
                 }else{
-                    array_push($err_msg, 'ファイルが保存されませんでした');
+                    array_push($err_msg, 'ファイルが保存されませんでした.再度やり直して下さい。');
                 }
             } else {
-                array_push($err_msg, 'ファイルが選択されていません');
+                array_push($err_msg, 'ファイルが選択されていません。もう一度やり直して下さい。');
             }
         } else {
-            foreach ($err_msg as $msg) {
-                echo $msg;
-                echo '<br>';
-            }
+            return $err_msg;
         }
     }
 

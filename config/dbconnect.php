@@ -132,7 +132,7 @@ function getPicture(){
         $stmt = $dbh->prepare($sql);
         $stmt->bindValue(':id_article',(int)$id_article,PDO::PARAM_INT);
         $stmt->execute();
-        echo '削除しました';
+        header('Location:./mypage.php');
         }
 
 
@@ -140,7 +140,7 @@ function getPicture(){
     public function deleteImage($del_image){
         $result = false;
         if(empty($del_image)){
-            exit('画像がありません。');
+            header('Location:mypage.php');
         }
         $dbh = $this->dbconnect();
         $sql = "UPDATE $this->table_name SET image = NULL 
