@@ -55,6 +55,7 @@ if(isset($image)){
         <link href="s.css" rel="stylesheet">
         <!-- javascript -->
         <script type='text/javascript' src='//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js?ver=1.11.3'></script>
+        <!-- lightbox -->
         <link href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.7.1/css/lightbox.css" rel="stylesheet">
         <script src="https://code.jquery.com/jquery-1.12.4.min.js" type="text/javascript"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.7.1/js/lightbox.min.js" type="text/javascript"></script>
@@ -75,13 +76,15 @@ if(isset($image)){
             </ol>
         </nav>
         <div class ="header-right">
+          <div class="user-info">
             <p>ログインユーザ:<?php echo h($login_user['name'])?></p>
             <p>メールアドレス:<?php echo h($login_user['email'])?></p>
-            <div class ="logout">
-                <form method ="POST" action ="logout.php">
-                    <input type ="submit" name ="logout" value ="ログアウト">
-                </form>
-            </div>
+          </div>  
+          <div class ="logout">
+              <form method ="POST" action ="logout.php">
+                  <input type ="submit" name ="logout" value =" &#xf08b;" class="logout-btn">
+              </form>
+          </div>
         </div>
     </div>  
 </header>

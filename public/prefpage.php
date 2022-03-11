@@ -6,6 +6,8 @@ session_start();
 require_once '../functions/functions.php';
 require_once '../classes/article_class.php';
 require_once '../classes/login_class.php';
+require_once '../classes/prefecture_class.php';
+
 
 
 //ログインしているか判定し、していなければ新規登録画面へ ｓ
@@ -20,7 +22,7 @@ $login_user = $_SESSION['login_user'];
 $id_member = $login_user['id_member'];
 
 
-//メンバー個々の記事を取得
+//メンバー個々の記事を取得→ メンバー個々の県別の記事取得
 $art = new Article('article');
 $articleData = $art->getMemberPost($id_member);
 $imageURL = '/post_travel/images/';
@@ -46,6 +48,28 @@ if(!empty($articleData)){
 }else{
     $filterData = '記事が投稿されていません。';
 }
+
+
+//DBに保存されている色をCSSに反映される
+$pref = new Prefecture('Prefecture');
+$getPref = $pref->getPrefColor($id_member);
+
+foreach($getPref as $pref => $color){
+    
+    if(!is_null($color)){
+        if ($pref == 'hokkaido'){ $hokkaido = $color;}
+        if ($pref == 'aomori'){ $aomori = $color;}
+        if ($pref == 'iwate'){ $iwate = $color;} 
+    }
+}
+//DBに色を保存するために県名を＄_GETで受け取る
+//color-formクラスでorefchange.phpに色データを送信
+if(!empty($_GET['prefecture'])){
+    $pref_name = $_GET['prefecture']; 
+}
+
+
+
 
 
 ?>
@@ -97,15 +121,28 @@ if(!empty($articleData)){
 
 <div class ="content clearfix" >
     <div class = "map">
-        <div class ="japan">
+        <div class="color-form">
+            <form method="post" action ="./prefchange.php">
+                <input type="hidden" name="pref_name" value="<?php echo $pref_name; ?>">
+                <input type ="color" name="pref_color">
+                <input type ="submit" value ="この色にする">
+            </form>
+        </div>    
 
+
+        <div class ="japan">
+            <style>
+            #hokkaido  { fill:<?php echo $hokkaido?>  } #hokkaido:hover  { fill:#39A869;}
+            #aomori    { fill:<?php echo $aomori?>    } #aomori:hover    { fill:#39A869;}   
+            #iwate     { fill:<?php echo $iwate?>     } #iwate:hover     { fill:#39A869;}    
+            </style>
             <svg id="map" data-name="japan" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 773.6 846.4">
-                <g><a xlink:href="./form.php"><title>北海道</title>
+                <g><a xlink:href="./prefpage.php?prefecture=hokkaido"><title>北海道</title>
                 <path class="cls-1" id= "hokkaido" data-name ="hokkaido" d="M653.6,2.6,634.1,18.3l7.4,40.9-9.1,16.6L631,101.2l-13.5,8.6,2.3,29.3-14.4,8-29-16.2-8,8.5,9.4,14-32.7,20.8-1.6,22.3,14.6,23.7-10.1,16,6.9,13.8,25.8-21.8,11.4,6.1,11.9-6.7-21.6-22.2-8.7,3.9L562.9,195,575,178.1l12.6,4.1,7.7,16.5L627.8,180,689,229l25.7-46.8L744,167.3l30.8,5.6,25.7-12.7-13-11.8-5-25.9L796.9,103l-1.7-9.6-26.8,19.3-24.1-8.1L689.8,64.9,672.7,28.3Z" transform="translate(-27.4 -2.1)"/></a></g>
                 <g><a xlink:href="./form.php"><title>青森県</title>
-                <path class="cls-1" data-name ="aomori" d="M617.5,314l-9.8-13.4,5.8-47.1-23.4-8.3-7.9,15.2,17.9,8.2-3.7,15.8-19.8-.8-3.8-19.9-11.5-4.2-5.4,24.6-14.1,5.8-1,17.1,37.4,40Z" transform="translate(-27.4 -2.1)"/></a></g>
+                <path class="cls-1" id="aomori" data-name ="aomori" d="M617.5,314l-9.8-13.4,5.8-47.1-23.4-8.3-7.9,15.2,17.9,8.2-3.7,15.8-19.8-.8-3.8-19.9-11.5-4.2-5.4,24.6-14.1,5.8-1,17.1,37.4,40Z" transform="translate(-27.4 -2.1)"/></a></g>
                 <g><a xlink:href="./form.php"><title>岩手県</title>
-                <path class="cls-1" data-name ="iwate" d="M572.7,397.2l-5.1-28.5,7.8-12.2,6.4-32.7,35.7-9.9L630,356.5l-17.5,43.3L585.1,417Z" transform="translate(-27.4 -2.1)"/></a></g>
+                <path class="cls-1" id ="iwate" data-name ="iwate" d="M572.7,397.2l-5.1-28.5,7.8-12.2,6.4-32.7,35.7-9.9L630,356.5l-17.5,43.3L585.1,417Z" transform="translate(-27.4 -2.1)"/></a></g>
                 <g><a xlink:href="./form.php"><title>秋田県</title>
                 <path class="cls-1" data-name ="akita" d="M540.9,306.9l.4,17.2-9.1,9.7L543,347.7,533.7,383l48,44,.1-103.3.4-14.7Z" transform="translate(-27.4 -2.1)"/></a></g>
                 <g><a xlink:href="./form.php"><title>山形県</title>
@@ -137,7 +174,7 @@ if(!empty($articleData)){
                 <g><a xlink:href="./form.php"><title>山梨県</title>
                 <path class="cls-1" data-name ="yamanashi" d="M468.2,557.4l-32.2-.5,9.3,49.1,31.9-16.4,10.1-10.9-9-11.8Z" transform="translate(-27.4 -2.1)"/></a></g>
                 <g><a xlink:href="./form.php"><title>静岡県</title>
-                <path class="cls-4" data-name ="shizuoka" d="M453.9,596.9l-6.2,7.6,11,2.4,10.7-1.9,3.1,6.1-5.7,3.2-1.3,17.1,7.6,3.2,11.8-14.9-.5-13.3-6.7-5.8-.5-10.9-15.5-.9Z" transform="translate(-27.4 -2.1)"/></a></g>
+                <path class="cls-4" data-name ="shizuoka" d="M453.9,596.9l-6.2,7.6,11,2.4,10.7-1.9,3.1,6.1-5.7,3.2-1.3,17.1,7.6,3.2,11.8-14.9-.5-13.3-6.7-5.8-.5-10.9-15.5-.9Z" transform="translate(-27.4 -2.1) "/></a></g>
                 <g><a xlink:href="./form.php"><title>静岡県</title>
                 <path class="cls-4" data-name ="shizuoka" d="M444.7,582l-17.2,15.5-23.3,13.1,6.5,14.9,29.6,7,14.9-19.2,3.4-6.5-4.8-10Z" transform="translate(-27.4 -2.1)"/></a></g>
                 <g><a xlink:href="./form.php"><title>長野県</title>

@@ -77,11 +77,13 @@ if(isset($image)){
             </ol>
         </nav>
         <div class ="header-right">
-            <p>ログインユーザ:<?php echo h($login_user['name'])?></p>
-            <p>メールアドレス:<?php echo h($login_user['email'])?></p>
+            <div class="user-info">
+                <p>ログインユーザ:<?php echo h($login_user['name'])?></p>
+                <p>メールアドレス:<?php echo h($login_user['email'])?></p>
+            </div>  
             <div class ="logout">
                 <form method ="POST" action ="logout.php">
-                    <input type ="submit" name ="logout" value ="ログアウト">
+                    <input type ="submit" name ="logout" value =" &#xf08b;" class="logout-btn">
                 </form>
             </div>
         </div>
