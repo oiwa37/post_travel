@@ -8,7 +8,7 @@ Class Prefecture extends Dbc{
 
 
     /**
-   * 
+   * 県別テーブルに色を保存
    * @param $filename
    * @return bool $result
    */
@@ -32,11 +32,13 @@ Class Prefecture extends Dbc{
     }
     
     //DBに保存されている色をCSSに反映される
+
     public function getPrefColor($id_member){
         try{
             $dbh = $this->dbconnect();
-            $sql = 'SELECT hokkaido,aomori,iwate
-                    FROM prefecture WHERE id_member = :id_member';
+            $sql = 'SELECT hokkaido,aomori,iwate,akita,miyagi,yamagata,fukushima,niigata,ibaraki,tochigi,gunma,chiba,saitama,tokyo,kanagawa,yamanashi,nagano,toyama,ishikawa,shizuoka,aichi,gifu,fukui,shiga,mie,wakayama,nara,
+            kyoto,osaka,hyogo, okayama,hiroshima,yamaguchi,tottori,shimane,kagawa,tokushima,ehime,kochi,fukuoka,oita,miyazaki,kagoshima,kumamoto,saga,nagasaki,okinawa                    
+            FROM prefecture WHERE id_member = :id_member';
             $stmt = $dbh->prepare($sql);
             $stmt->bindValue(':id_member',(int)$id_member,PDO::PARAM_INT);
             $stmt->execute();
@@ -50,4 +52,6 @@ Class Prefecture extends Dbc{
     }
 
 
+    
 }
+

@@ -120,9 +120,61 @@ function select_prefecture(){
     echo '<option value="沖縄県">沖縄県</option>';
     echo '</select>';}
 
+/**
+ * 県名をローマ字から漢字に変換
+ * @param void $pref_name
+ * @return string $pref_change
+ */
+function changePrefName($pref_name){
 
-
-
-
+    if ($pref_name=='hokkaido') {$pref_change='北海道';return $pref_change;}
+    if ($pref_name=='aomori')   {$pref_change='青森県'; return $pref_change;}
+    if ($pref_name=='iwate')    {$pref_change='岩手県'; return $pref_change;}
+    if ($pref_name=='akita')    {$pref_change='秋田県'; return $pref_change;}
+    if ($pref_name=='miyagi')   {$pref_change='宮城県'; return $pref_change;}
+    if ($pref_name=='yamagata') {$pref_change='山形県'; return $pref_change;}
+    if ($pref_name=='fukushima'){$pref_change='福島県'; return $pref_change;}
+    if ($pref_name=='niigata')  {$pref_change='新潟県'; return $pref_change;}
+    if ($pref_name=='ibaraki')  {$pref_change='茨城県'; return $pref_change;}
+    if ($pref_name=='tochigi')  {$pref_change='栃木県'; return $pref_change;}
+    if ($pref_name=='gunma')    {$pref_change='群馬県'; return $pref_change;}
+    if ($pref_name=='chiba')    {$pref_change='千葉県'; return $pref_change;}
+    if ($pref_name=='saitama')  {$pref_change='埼玉県'; return $pref_change;}
+    if ($pref_name=='tokyo')    {$pref_change='東京都'; return $pref_change;}
+    if ($pref_name=='kanagawa') {$pref_change='神奈川県'; return $pref_change;}
+    if ($pref_name=='yamanashi'){$pref_change='山梨県'; return $pref_change;}
+    if ($pref_name=='nagano')   {$pref_change='長野県'; return $pref_change ;}
+    if ($pref_name=='toyama')   {$pref_change='富山県'; return $pref_change ;}
+    if ($pref_name=='ishikawa') {$pref_change='石川県'; return $pref_change ;}
+    if ($pref_name=='shizuoka') {$pref_change='静岡県'; return $pref_change ;}
+    if ($pref_name=='aichi')    {$pref_change='愛知県'; return $pref_change ;}
+    if ($pref_name=='gifu')     {$pref_change='岐阜県'; return $pref_change ;}
+    if ($pref_name=='fukui')    {$pref_change='福井県'; return $pref_change ;}
+    if ($pref_name=='shiga')    {$pref_change='滋賀県'; return $pref_change ;}
+    if ($pref_name=='mie')      {$pref_change='三重県'; return $pref_change ;}
+    if ($pref_name=='wakayama') {$pref_change='和歌山県'; return $pref_change;}
+    if ($pref_name=='nara')     {$pref_change='奈良県'; return $pref_change;}
+    if ($pref_name=='kyoto')    {$pref_change='京都府'; return $pref_change;}
+    if ($pref_name=='osaka')    {$pref_change='大阪府'; return $pref_change;}
+    if ($pref_name=='hyogo')    {$pref_change='兵庫県'; return $pref_change;}
+    if ($pref_name=='okayama')  {$pref_change='岡山県'; return $pref_change;}
+    if ($pref_name=='hiroshima'){$pref_change='広島県'; return $pref_change;}
+    if ($pref_name=='yamaguchi'){$pref_change='山口県'; return $pref_change;}
+    if ($pref_name=='tottori')  {$pref_change='鳥取県'; return $pref_change;} 
+    if ($pref_name=='shimane')  {$pref_change='島根県'; return $pref_change;} 
+    if ($pref_name=='kagawa')   {$pref_change='香川県'; return $pref_change;}     
+    if ($pref_name=='tokushima'){$pref_change='徳島県'; return $pref_change;}
+    if ($pref_name=='ehime')    {$pref_change='愛媛県'; return $pref_change;}    
+    if ($pref_name=='kochi')    {$pref_change='高知県'; return $pref_change;}    
+    if ($pref_name=='fukuoka')  {$pref_change='福岡県'; return $pref_change;} 
+    if ($pref_name=='oita')     {$pref_change='大分県'; return $pref_change;}   
+    if ($pref_name=='miyazaki') {$pref_change='宮崎県'; return $pref_change;}
+    if ($pref_name=='kagoshima'){$pref_change='鹿児島県'; return $pref_change;}
+    if ($pref_name=='kumamoto') {$pref_change='熊本県'; return $pref_change;}
+    if ($pref_name=='saga')     {$pref_change='佐賀県'; return $pref_change;}   
+    if ($pref_name=='nagasaki') {$pref_change='長崎県'; return $pref_change;}
+    if ($pref_name=='okinawa')  {$pref_change='沖縄県'; return $pref_change;}
+    
+}
 
 ?>

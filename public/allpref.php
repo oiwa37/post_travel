@@ -6,6 +6,8 @@ session_start();
 require_once '../functions/functions.php';
 require_once '../classes/article_class.php';
 require_once '../classes/login_class.php';
+require_once '../classes/prefecture_class.php';
+
 
 
 //ログインしているか判定し、していなければ新規登録画面へ
@@ -18,26 +20,6 @@ if(!$result){
 }
 $login_user = $_SESSION['login_user'];
 $id_member = $login_user['id_member'];
-
-//全ての記事を取得
-$art = new Article('article','member');
-$articleData = $art->getAll();
-$imageURL = '/post_travel/images/';
-
-
-//公開ステータスのデータ総数から1ページあたり5件とし最大ページ数を取得
-$dbh = $art->dbconnect();
-$count_sql = 'SELECT COUNT(*) as cnt FROM article WHERE post_status = 1';
-$stmt = $dbh->query($count_sql);
-$count = $stmt->fetch(PDO::FETCH_ASSOC);
-$per_page = 5; //1ページあたりの件数
-$max_page = ceil($count['cnt'] / $per_page);
-
-//現在表示しているページ番号
-$page = $page = empty($_GET['page']) ? 1 : (int) $_GET['page'];
-
-$filterData = $art->filter($page, $per_page, $articleData);
-
 
 
 
@@ -431,6 +413,40 @@ foreach($cntPref as $key => $val){
   
 }
 
+if(!empty($_GET['prefecture'])){
+  $pref_name = $_GET['prefecture'];  
+}
+
+
+//DBから県別の記事取得
+$pref_change = changePrefName($pref_name);
+
+$art = new Article('article','member');
+$articleData = $art->getAllpref($pref_change);
+$imageURL = '/post_travel/images/';
+
+
+
+
+
+
+
+//公開ステータスのデータ総数から1ページあたり5件とし最大ページ数を取得
+if(!empty($articleData)){
+$dbh = $art->dbconnect();
+$count_sql = 'SELECT COUNT(*) as cnt FROM article WHERE post_status = 1';
+$stmt = $dbh->query($count_sql);
+$count = $stmt->fetch(PDO::FETCH_ASSOC);
+$per_page = 5; //1ページあたりの件数
+$max_page = ceil($count['cnt'] / $per_page);
+//現在表示しているページ番号
+$page = $page = empty($_GET['page']) ? 1 : (int) $_GET['page'];
+//ぺージ番号を渡してデータ配列にフィルターをかける
+$filterData = $art->filter($page, $per_page, $articleData);
+}else{
+  $filterData = '記事が投稿されていません。';
+}
+
 ?>
 
 <!DOCTYPE HTML PUBLIC"=//W3C//DTD HTML 4.01 Transitional//EN>
@@ -543,7 +559,7 @@ foreach($cntPref as $key => $val){
             #nagasaki  { fill:<?php echo $nagasaki?>  } #nagasaki:hover  { fill:#39A869;} 
             #okinawa   { fill:<?php echo $okinawa?>   } #okinawa:hover   { fill:#39A869;}  
             </style>  
-            <svg id="map" data-name="japan" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 773.6 846.4">
+            <svg id="map"  data-name="japan" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 773.6 846.4">
                 <g><a xlink:href="./allpref.php?prefecture=hokkaido"><title>北海道</title><path class="cls-1" id= "hokkaido" data-name ="hokkaido" d="M653.6,2.6,634.1,18.3l7.4,40.9-9.1,16.6L631,101.2l-13.5,8.6,2.3,29.3-14.4,8-29-16.2-8,8.5,9.4,14-32.7,20.8-1.6,22.3,14.6,23.7-10.1,16,6.9,13.8,25.8-21.8,11.4,6.1,11.9-6.7-21.6-22.2-8.7,3.9L562.9,195,575,178.1l12.6,4.1,7.7,16.5L627.8,180,689,229l25.7-46.8L744,167.3l30.8,5.6,25.7-12.7-13-11.8-5-25.9L796.9,103l-1.7-9.6-26.8,19.3-24.1-8.1L689.8,64.9,672.7,28.3Z" transform="translate(-27.4 -2.1)"/></a></g>
                 <g><a xlink:href="./allpref.php?prefecture=aomori"><title>青森県</title><path class="cls-1" id="aomori" data-name ="aomori" d="M617.5,314l-9.8-13.4,5.8-47.1-23.4-8.3-7.9,15.2,17.9,8.2-3.7,15.8-19.8-.8-3.8-19.9-11.5-4.2-5.4,24.6-14.1,5.8-1,17.1,37.4,40Z" transform="translate(-27.4 -2.1)"/></a></g>
                 <g><a xlink:href="./allpref.php?prefecture=iwate"><title>岩手県</title><path class="cls-1" id ="iwate" data-name ="iwate" d="M572.7,397.2l-5.1-28.5,7.8-12.2,6.4-32.7,35.7-9.9L630,356.5l-17.5,43.3L585.1,417Z" transform="translate(-27.4 -2.1)"/></a></g>
@@ -598,7 +614,9 @@ foreach($cntPref as $key => $val){
 
     <div class ="allpost">
         <div class = "article">
+          <div class ="already">
             <h2>みんなの投稿</h2>
+            <?php if(is_array($filterData)):?>
             <?php foreach($filterData as $column): ?>
       <table>
         <td class ="all-title"><a href ="detail.php?id_article=<?php echo $column['id_article']; ?>">
@@ -613,6 +631,13 @@ foreach($cntPref as $key => $val){
             <div>
             <?php $art->paging2($max_page, $page); ?>
             </div>
+    <?php else :?>
+          </div>
+          <div class ="notYet">
+                <p><?php echo $filterData;?> </p>
+                <p></p><a href ="./form.php" class="newpost-btn">新規投稿をする</a></p>
+            <?php endif; ?>
+        </div>
       </div>
     </div>
 </div>

@@ -32,7 +32,7 @@ Class Dbc{
     return $dbh;
     }
 
-    // //全データ取得（公開になっているもののみ） 
+    // //全データ取得
     // public function getAll(){
     //     $dbh = $this->dbconnect();
     //     $sql = "SELECT * FROM $this->table_name 
@@ -44,7 +44,7 @@ Class Dbc{
     //     $dbh = null;
     // }
 
-    //全データ取得改
+    //全データ取得（公開になっているもののみ） 
     function getAll(){
         $dbh = $this->dbconnect();
         $sql = "SELECT *
@@ -56,6 +56,32 @@ Class Dbc{
         return $result;
         $dbh = null;
     }
+
+     /**
+     * 県別全メンバー記事取得（公開になっているもののみ） 
+     * @param string $pref_change
+     * @return array|bool $result|false あれば記事なければfalse
+     */
+    function getAllpref($pref_change){
+        try{
+        $dbh = $this->dbconnect();
+        $sql = "SELECT *
+                    FROM article INNER JOIN member 
+                    ON article.id_member = member.id_member
+                    WHERE post_status = 1
+                    AND prefecture = :prefecture
+                    ORDER BY id_article DESC ";
+        $stmt = $dbh->prepare($sql);
+        $stmt->bindValue(':prefecture',(string)$pref_change,PDO::PARAM_STR);
+        $stmt->execute();
+        $result = $stmt->fetchall(PDO::FETCH_ASSOC);
+        return $result;
+        $dbh = null;
+    }catch(\PDOException $e){
+        echo $e->getMessage();
+        return  false;   
+    }
+}
 
 
     /**
@@ -81,6 +107,32 @@ Class Dbc{
         return  false;   
         }
 }
+
+    /**
+     * id_memberから該当メンバーの県別記事を取得
+     * @param string $id_member $pref_change
+     * @return array|bool $result|false あれば記事なければfalse
+     */
+    public function getMemberPref($id_member,$pref_change){
+        try{
+        $dbh = $this->dbconnect();
+        $sql = "SELECT * FROM $this->table_name 
+                    WHERE id_member = :id_member
+                    AND prefecture = :prefecture
+                    ORDER BY id_article DESC ";
+        $stmt = $dbh->prepare($sql);
+        $stmt->bindValue(':id_member',(int)$id_member,PDO::PARAM_INT);
+        $stmt->bindValue(':prefecture',(string)$pref_change,PDO::PARAM_STR);
+        $stmt->execute();
+        $result = $stmt->fetchall(PDO::FETCH_ASSOC);
+        return $result;
+        $dbh = null;
+        }catch(\PDOException $e){
+        echo $e->getMessage();
+        return  false;   
+        }
+}
+
 
     /**
      * 写真を取得
