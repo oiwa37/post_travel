@@ -78,7 +78,8 @@ if(isset($image)){
         <div class ="header-right">
           <div class="user-info">
             <p>ログインユーザ:<?php echo h($login_user['name'])?></p>
-            <p>メールアドレス:<?php echo h($login_user['email'])?></p>
+            <?php $login_user = h($login_user['email'])?>
+                <p>メールアドレス:<?php echo addLimit($login_user)?></p>
           </div>  
           <div class ="logout">
               <form method ="POST" action ="logout.php">
@@ -161,7 +162,11 @@ if(isset($image)){
 
 </div>
     
-
+<footer>
+    <div class ="footer2">
+        <p>&copy; 2022 oiwa</p>
+    </div>
+</footer> 
 
 </body>
 </html>

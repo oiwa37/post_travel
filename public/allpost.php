@@ -467,7 +467,8 @@ foreach($cntPref as $key => $val){
         <div class ="header-right">
             <div class="user-info">
                 <p>ログインユーザ:<?php echo h($login_user['name'])?></p>
-                <p>メールアドレス:<?php echo h($login_user['email'])?></p>
+                <?php $login_user = h($login_user['email'])?>
+                <p>メールアドレス:<?php echo addLimit($login_user)?></p>
             </div>  
             <div class ="logout">
                 <form method ="POST" action ="logout.php">
@@ -478,10 +479,10 @@ foreach($cntPref as $key => $val){
     </div>
 </header> 
     
-<div class ="content clearfix">
+<div class ="content">
     <div class = "map">
         <div class ="color-map">
-          <h3>件数によって色が異なります！</h3>
+          <h3>件数によって色が異なります</h3>
           <ol>
             <li id="color" class="one">なし</li>
             <li id="color" class="two">1件</li>
@@ -537,7 +538,7 @@ foreach($cntPref as $key => $val){
             #fukuoka   { fill:<?php echo $fukuoka?>   } #fukuoka:hover   { fill:#39A869;}  
             #oita      { fill:<?php echo $oita?>      } #oita:hover      { fill:#39A869;}     
             #miyazaki  { fill:<?php echo $miyazaki?>  } #miyazaki:hover  { fill:#39A869;} 
-            #kagoshima { fill:<?php echo $kagoshim?>  } #kagoshima:hover { fill:#39A869;}
+            #kagoshima { fill:<?php echo $kagoshima?>  } #kagoshima:hover { fill:#39A869;}
             #kumamoto  { fill:<?php echo $kumamoto?>  } #kumamoto:hover  { fill:#39A869;} 
             #saga      { fill:<?php echo $saga?>      } #saga:hover      { fill:#39A869;}     
             #nagasaki  { fill:<?php echo $nagasaki?>  } #nagasaki:hover  { fill:#39A869;} 
@@ -596,14 +597,14 @@ foreach($cntPref as $key => $val){
         </div>
     </div>
 
-    <div class ="allpost">
+    <div class ="container">
         <div class = "article">
             <h2>みんなの投稿</h2>
             <?php foreach($filterData as $column): ?>
       <table>
-        <td class ="all-title"><a href ="detail.php?id_article=<?php echo $column['id_article']; ?>">
+        <td class ="title"><a href ="detail.php?id_article=<?php echo $column['id_article']; ?>">
         <?php echo h($column['title']); ?></a></td>
-        <div class ="all-prefecture"><?php echo h($column['prefecture']); ?></div>
+        <div class ="prefecture"><?php echo h($column['prefecture']); ?></div>
         <td class ="detail"><?php echo textLimit($column['content']); ?></td>
         <td class ="name"></td>
         <td class ="post-at"><?php echo h($column['name']);?><?php echo h($column['post_at']);?>
@@ -618,8 +619,8 @@ foreach($cntPref as $key => $val){
 </div>
 
 <footer>
-    <div class ="footer">
-        フッター
+    <div class ="footer2">
+        <p>&copy; 2022 oiwa</p>
     </div>
 </footer> 
 

@@ -53,7 +53,12 @@ unset($_SESSION['login_err']);
             <ol class="menu">
                 <li><a href ="register_form.php">新規登録</a> </li>
                 <li><a href ="login_form.php">ログイン</a> </li>
-                <li><a href ="#">ゲストログイン</a></li>
+                <li>            
+                <form method="POST" action ="login.php">
+                <input type ="hidden" name="email" value="guest@guest.com">
+                <input type ="hidden" name="password"  value="111111">
+                <input type ="submit" name ="guest_login" value ="ゲストログイン" class="guest-login">
+            </form></li>
             </ol>
         </nav> 
     </div>

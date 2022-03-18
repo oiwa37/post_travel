@@ -16,7 +16,7 @@ function textLimit($text){
     }
 }
 /**
- * 表示するタイトつの長さを制限する。
+ * 表示するタイトルの長さを制限する。
  * @param $text  整型したい文字列
  * @return $title | $text 整形後の文字列もしくはオリジナル
  */
@@ -29,6 +29,37 @@ function titleLimit($text){
     echo $text;
     }
 }
+/**
+ * 表示するアドレスの長さを制限する。
+ * @param $text  整型したい文字列
+ * @return $title | $text 整形後の文字列もしくはオリジナル
+ */
+function addLimit($text){
+    $limit = 15;     //文字数の上限
+    if(mb_strlen($text) > $limit) { 
+    $title = mb_substr($text,0,$limit);
+    echo $title. '…' ;
+    } else {
+    echo $text;
+    }
+}
+
+/**
+ * 表示するユーザ名の長さを制限する。
+ * @param $text  整型したい文字列
+ * @return $title | $text 整形後の文字列もしくはオリジナル
+ */
+function userLimit($text){
+    $limit = 10;     //文字数の上限
+    if(mb_strlen($text) > $limit) { 
+    $title = mb_substr($text,0,$limit);
+    echo $title. '…' ;
+    } else {
+    echo $text;
+    }
+}
+
+
 
 /**
  * XSS対策：エスケープ処理 (配列ver.)

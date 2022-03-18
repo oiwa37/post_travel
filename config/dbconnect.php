@@ -204,19 +204,21 @@ function getPicture(){
         // echo '画像削除しました';
     }
 
+
     /**
- * ページ番号リンクの表示
- * @param int $max_page データの最大件数
- * @param int $page 現在のページ番号
- * @param int $pageRange $pageから前後何件のページ番号を表示するか
- */
-    public function paging($max_page,$page=1,$pageRange =2){
+     * ページ番号リンクの表示
+     * @param int $max_page データの最大件数
+     * @param int $page 現在のページ番号
+     * @param int $pageRange $pageから前後何件のページ番号を表示するか
+     */
+    public function paging($max_page,$page=1,$pageRange=2){
         $page = h($page);
         $prev = max($page - 1, 1); // 前のページ番号は1と比較して大きい方を使う
         $next = min($page + 1, $max_page); // 次のページ番号は最大ページ数と比較して小さい方を使う
     
         $start = max($page - $pageRange, 2); //ページ番号の始点
         $end = min($page + $pageRange, $max_page - 1); // ページ番号の終点
+
         //1ページ目のときのページ番号の終点
         if($page === 1){
         $end = $pageRange * 2;
@@ -267,6 +269,8 @@ function getPicture(){
     //最後のページ番号へのリンク
     if ($page < $max_page) {
         echo '<a href="mypage.php?page='. $max_page .'" >' . $max_page . '</a>';
+    }elseif($page == 1 && $page == $max_page){
+        echo '<p></p>';    
     } else {
         echo '<span>' . $max_page . '</span>';
     }
@@ -344,13 +348,15 @@ function getPicture(){
     //最後のページ番号へのリンク
     if ($page < $max_page) {
         echo '<a href="allpost.php?page='. $max_page .'" >' . $max_page . '</a>';
+    }elseif($page == 1 && $page == $max_page){
+        echo '<p></p>';     
     } else {
         echo '<span>' . $max_page . '</span>';
     }
 
     //最後のページへのリンク
     if ($page < $max_page){
-        echo '<a href="allpost.php?page=' . $max_page . ' title="最後のページへ">&raquo;</a>';
+        echo '<a href="allpost.php?page=' . $max_page . ' title="最後のページへ">&raquo;</a>';   
     } else {
         echo '<span class="first_last_page">&raquo;</span>';
     }
@@ -413,6 +419,8 @@ echo '</div>';
 //最後のページ番号へのリンク
 if ($page < $max_page) {
     echo '<a href="pictures.php?page='. $max_page .'" >' . $max_page . '</a>';
+}elseif($page == 1 && $page == $max_page){
+    echo '<p></p>';       
 } else {
     echo '<span>' . $max_page . '</span>';
 }

@@ -143,8 +143,10 @@ foreach($getPref as $pref => $color){
         </nav>  
         <div class ="header-right">
             <div class="user-info">
-                <p>ログインユーザ:<?php echo h($login_user['name'])?></p>
-                <p>メールアドレス:<?php echo h($login_user['email'])?></p>
+                <?php $user_name = h($login_user['name'])?>
+                <p>ログインユーザ:<?php echo userLimit($user_name)?></p>
+                <?php $login_user = h($login_user['email'])?>
+                <p>メールアドレス:<?php echo addLimit($login_user)?></p>
             </div>  
             <div class ="logout">
                 <form method ="POST" action ="logout.php">
@@ -155,7 +157,7 @@ foreach($getPref as $pref => $color){
     </div>
 </header> 
 
-<div class ="content clearfix" >
+<div class ="main-content" >
     <div class = "map">
         <div class ="japan">
         <style>
@@ -201,7 +203,7 @@ foreach($getPref as $pref => $color){
             #fukuoka   { fill:<?php echo $fukuoka?>   } #fukuoka:hover   { fill:#39A869;}  
             #oita      { fill:<?php echo $oita?>      } #oita:hover      { fill:#39A869;}     
             #miyazaki  { fill:<?php echo $miyazaki?>  } #miyazaki:hover  { fill:#39A869;} 
-            #kagoshima { fill:<?php echo $kagoshim?>  } #kagoshima:hover { fill:#39A869;}
+            #kagoshima { fill:<?php echo $kagoshima?>  } #kagoshima:hover { fill:#39A869;}
             #kumamoto  { fill:<?php echo $kumamoto?>  } #kumamoto:hover  { fill:#39A869;} 
             #saga      { fill:<?php echo $saga?>      } #saga:hover      { fill:#39A869;}     
             #nagasaki  { fill:<?php echo $nagasaki?>  } #nagasaki:hover  { fill:#39A869;} 
@@ -211,7 +213,7 @@ foreach($getPref as $pref => $color){
                 <g><a xlink:href="./prefpage.php?prefecture=hokkaido"><title>北海道</title><path class="cls-1" id= "hokkaido" data-name ="hokkaido" d="M653.6,2.6,634.1,18.3l7.4,40.9-9.1,16.6L631,101.2l-13.5,8.6,2.3,29.3-14.4,8-29-16.2-8,8.5,9.4,14-32.7,20.8-1.6,22.3,14.6,23.7-10.1,16,6.9,13.8,25.8-21.8,11.4,6.1,11.9-6.7-21.6-22.2-8.7,3.9L562.9,195,575,178.1l12.6,4.1,7.7,16.5L627.8,180,689,229l25.7-46.8L744,167.3l30.8,5.6,25.7-12.7-13-11.8-5-25.9L796.9,103l-1.7-9.6-26.8,19.3-24.1-8.1L689.8,64.9,672.7,28.3Z" transform="translate(-27.4 -2.1)"/></a></g>
                 <g><a xlink:href="./prefpage.php?prefecture=aomori"><title>青森県</title><path class="cls-1" id="aomori" data-name ="aomori" d="M617.5,314l-9.8-13.4,5.8-47.1-23.4-8.3-7.9,15.2,17.9,8.2-3.7,15.8-19.8-.8-3.8-19.9-11.5-4.2-5.4,24.6-14.1,5.8-1,17.1,37.4,40Z" transform="translate(-27.4 -2.1)"/></a></g>
                 <g><a xlink:href="./prefpage.php?prefecture=iwate"><title>岩手県</title><path class="cls-1" id ="iwate" data-name ="iwate" d="M572.7,397.2l-5.1-28.5,7.8-12.2,6.4-32.7,35.7-9.9L630,356.5l-17.5,43.3L585.1,417Z" transform="translate(-27.4 -2.1)"/></a></g>
-                <g><a xlink:href="./prefpage.php?prefecture=akita"><title>秋田県</title><path class="cls-2" id ="akita" data-name ="akita" d="M540.9,306.9l.4,17.2-9.1,9.7L543,347.7,533.7,383l48,44,.1-103.3.4-14.7Z" transform="translate(-27.4 -2.1)"/></a></g>
+                <g><a xlink:href="./prefpage.php?prefecture=akita"><title>秋田県</title><path class="cls-1" id ="akita" data-name ="akita" d="M540.9,306.9l.4,17.2-9.1,9.7L543,347.7,533.7,383l48,44,.1-103.3.4-14.7Z" transform="translate(-27.4 -2.1)"/></a></g>
                 <g><a xlink:href="./prefpage.php?prefecture=yamagata"><title>山形県</title><path class="cls-1" id ="yamagata" data-name ="yamagata" d="M515.4,413.7l6.3,43.1L554.4,483l8.1-80.2L533.6,383Z" transform="translate(-27.4 -2.1)"/></a></g>
                 <g><a xlink:href="./prefpage.php?prefecture=miyagi"><title>宮城県</title><path class="cls-1" id ="miyagi" data-name ="miyagi" d="M575.2,460.2l1.3-20.5,11.4-9.1,14.5,3.6.5-21,9.6-13.3-8-3.3L591.8,406l-19.2-8.8-10.1,5.7-16.2,48.9,12.2,16.4Z" transform="translate(-27.4 -2.1)"/></a></g>
                 <g><a xlink:href="./prefpage.php?prefecture=fukushima"><title>福島県</title><path class="cls-1" id ="fukushima" data-name ="fukushima" d="M495.7,505l1.9-26.5,15.1-4.8,9-16.9,21.9,6.6,2.8-11.7,28.9,8.5-1,48.8-10.1,8.5-45.7,13.2Z" transform="translate(-27.4 -2.1)"/></a></g>
@@ -261,7 +263,7 @@ foreach($getPref as $pref => $color){
     </div>
 
     <div class ="container">
-        <div class = "myarticle">
+        <div class = "article">
             <div class="already">
             <h2>自分の投稿</h2>
             <?php if(is_array($filterData)):?>
@@ -289,9 +291,9 @@ foreach($getPref as $pref => $color){
 </div>
 
 <footer>
-  <div class ="footer">
-    <p>&copy; 2022 oiwa</p>
-  </div>
+    <div class ="footer">
+        <p>&copy; 2022 oiwa</p>
+    </div>
 </footer> 
 </body>
 </html>

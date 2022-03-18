@@ -49,7 +49,7 @@ $err_msg = $result;
 
 <!DOCTYPE HTML PUBLIC"=//W3C//DTD HTML 4.01 Transitional//EN>
 <html>
-    <head>
+<head>
         <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
         <title>旅の思い出</title>
         <!-- リセットCSS -->
@@ -72,18 +72,19 @@ $err_msg = $result;
         </div>  
         <nav class ="gnav">
             <ol class="menu">
-                <li><a href ="form.php">新規作成</a></li>
-                <li><a href ="mypage.php">自分の投稿</a> </li>
-                <li><a href ="allpost.php">みんなの投稿</a> </li>
-                <li><a href ="pictures.php">写真の投稿</a> </li>
+                <li><a href ="../form.php">新規作成</a></li>
+                <li><a href ="../mypage.php">自分の投稿</a> </li>
+                <li><a href ="../allpost.php">みんなの投稿</a> </li>
+                <li><a href ="../pictures.php">写真の投稿</a> </li>
             </ol>
         </nav>
         <div class ="header-right">
             <p>ログインユーザ:<?php echo h($login_user['name'])?></p>
-            <p>メールアドレス:<?php echo h($login_user['email'])?></p>
+            <?php $login_user = h($login_user['email'])?>
+                <p>メールアドレス:<?php echo addLimit($login_user)?></p>
             <div class ="logout">
-                <form method ="POST" action ="logout.php">
-                    <input type ="submit" name ="logout" value ="ログアウト">
+            <form method ="POST" action ="../logout.php">
+                    <input type ="submit" name ="logout" value ="&#xf08b;" class="logout-btn">
                 </form>
             </div>
         </div>
@@ -177,7 +178,7 @@ $err_msg = $result;
 
 
 <footer>
-  <div class ="footer">
+  <div class ="footer2">
     <p>&copy; 2022 oiwa</p>
   </div>
 </footer>
