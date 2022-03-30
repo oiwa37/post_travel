@@ -2,7 +2,7 @@
 
 <?php
 require_once 'env.php';
-require_once '/Applications/MAMP/htdocs/post_travel/functions/functions.php';
+require_once '/home/xs115618/oiwa1105.com/public_html/post_travel/functions/functions.php';
 
 //DB接続関連
 Class Dbc{

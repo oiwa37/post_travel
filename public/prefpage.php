@@ -168,6 +168,14 @@ if(!empty($articleData)){
 
 <div class ="content" >
     <div class = "map"> 
+    <div class="hidden-box">
+                <label for ="label1"><i class="fa-solid fa-circle-question hint-btn"></i></label>
+                <input type="checkbox" id="label1" />
+                <div class="hidden-show">
+                    <p>県をクリックすることで、県別の記事が見れます！</p>
+                    <p>県別の記事ページで色をつけることができます。</p>
+                </div>    
+            </div>    
         <div class ="japan">
             <style>
             #hokkaido  { fill:<?php echo $hokkaido?>  } #hokkaido:hover  { fill:#39A869;}
@@ -376,7 +384,11 @@ if(!empty($articleData)){
 
 <footer>
     <div class ="footer2">
-        <p>&copy; 2022 oiwa</p>
+        <p>&copy; 2022 oiwa
+            &nbsp;&nbsp; <a href ="../config/terms.php" class="footer-link">利用規約</a>
+            &nbsp;&nbsp; <a href ="../config/privacy.php" class="footer-link">プライバシーポリシー</a>
+            &nbsp;&nbsp; <a href ="http://oiwa1105.com/script/mailform/contact/" class="footer-link">お問い合わせ</a></p>
+
     </div>
 </footer> 
 </body>

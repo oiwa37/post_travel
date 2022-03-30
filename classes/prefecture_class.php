@@ -2,7 +2,9 @@
 ini_set( 'display_errors', 1 );
 ini_set( 'error_reporting', E_ALL );
 
-require_once '/Applications/MAMP/htdocs/post_travel/config/dbconnect.php';
+require_once '/home/xs115618/oiwa1105.com/public_html/post_travel/config/dbconnect.php';
+
+
 
 Class Prefecture extends Dbc{
 
@@ -41,7 +43,7 @@ Class Prefecture extends Dbc{
             FROM prefecture WHERE id_member = :id_member';
             $stmt = $dbh->prepare($sql);
             $stmt->bindValue(':id_member',(int)$id_member,PDO::PARAM_INT);
-            $stmt->execute();
+            $stmt->execute(); 
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
             return $result;
             $dbh = null;

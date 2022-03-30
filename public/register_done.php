@@ -2,7 +2,7 @@
 ini_set( 'display_errors', 1 );
 ini_set( 'error_reporting', E_ALL );
 
-session_start();
+session_start(); 
 require_once '../functions/functions.php';
 require_once '../classes/login_class.php';
 
@@ -45,15 +45,23 @@ if(count($err) > 0){
 }
 
 
-$login = new LoginClass('member');
+$login = new LoginClass('member','prefecture');
 //エラーがなければユーザ登録
 if(count($err) === 0){
     $hasCreated = $login->createUser($_POST);
-    if(!$hasCreated){
+    
+    if($hasCreated){
+        //登録したメールアドレスから会員IDを取得し、県テーブルを追加
+        $user = $login->getUserByEmail($email);
+        $id_member = $user['id_member'];
+        $prefCreated = $login->createPref($id_member);
+        if(!$prefCreated){
+            echo 'エラー';
+    }elseif(!$hasCreated){
         $err[] = '登録に失敗しました。再度やり直して下さい。';
     }
 }
-
+}
 
 
 

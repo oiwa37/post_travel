@@ -2,7 +2,7 @@
 ini_set( 'display_errors', 1 );
 ini_set( 'error_reporting', E_ALL );
 
-require_once '/Applications/MAMP/htdocs/post_travel/config/dbconnect.php';
+require_once '/home/xs115618/oiwa1105.com/public_html/post_travel/config/dbconnect.php';
 
 Class Article extends Dbc{
     //新規投稿をDBに追加
@@ -245,7 +245,7 @@ Class Article extends Dbc{
             // 元の画像名を指定してサイズを取得
             list($width, $height) = getimagesize($image_before);
 
-            $newwidth = 0; // 新しい横幅
+            $newwidth = 0; // 新しい横幅 
             $newheight = 0; // 新しい縦幅
             $w = 300; // 最大横幅
             $h = 300; // 最大縦幅
@@ -321,22 +321,3 @@ Class Article extends Dbc{
     }
 }
         
-//エラーでページを戻して反映させる仕様
-// $err = [];
-
-// if(!$title = filter_input(INPUT_POST,'title')){
-//     $err[] = 'タイトルを入力して下さい。';
-// }
-// if(!$content = filter_input(INPUT_POST,'content')){
-//     $err[] = '本文を入力して下さい。';
-// }
-
-// //エラーがなかったときの処理
-// if(count($err) === 0){
-
-// }
-// //エラーがあった場合
-// if(count($err) < 0){
-//     header('Location:form.php');
-//     return;
-// }

@@ -65,7 +65,7 @@ unset($_SESSION['login_err']);
 </header>
 
 <div class= "register-form">
-    <h2>新規登録</h2>
+    <h2>新規登録</h2> 
         <?php if(isset($err['msg'])):?>
                     <p><?php echo $err['msg'];?></p>
                     <?php endif;?>
@@ -106,7 +106,11 @@ unset($_SESSION['login_err']);
 
 <footer>
     <div class ="footer">
-        <p>&copy; 2022 oiwa</p>
+        <p>&copy; 2022 oiwa
+            &nbsp;&nbsp; <a href ="../config/terms.php" class="footer-link">利用規約</a>
+            &nbsp;&nbsp; <a href ="../config/privacy.php" class="footer-link">プライバシーポリシー</a>
+            &nbsp;&nbsp; <a href ="http://oiwa1105.com/script/mailform/contact/" class="footer-link">お問い合わせ</a></p>
+
     </div>
 </footer> 
 

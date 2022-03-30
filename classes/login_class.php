@@ -2,7 +2,9 @@
 ini_set( 'display_errors', 1 );
 ini_set( 'error_reporting', E_ALL );
 
-require_once '/Applications/MAMP/htdocs/post_travel/config/dbconnect.php';
+require_once '/home/xs115618/oiwa1105.com/public_html/post_travel/config/dbconnect.php';
+
+
 
 
     Class LoginClass extends Dbc{
@@ -24,6 +26,27 @@ require_once '/Applications/MAMP/htdocs/post_travel/config/dbconnect.php';
             $dbh = $this->dbconnect();
             $stmt = $dbh->prepare($sql);
             $result = $stmt->execute($arr);
+            return $result;
+        }catch(\PDOException $e){
+            echo $e->getMessage();
+        return  $result;
+        }
+    }
+
+        /**
+     * ユーザの県テーブル作成
+     * @param array $userData
+     * @return bool $result
+     */
+    public function createPref($id_member){
+        $result = false;
+        $sql ="INSERT INTO prefecture(id_member) VALUE (:id_member)"; 
+
+        try{
+            $dbh = $this->dbconnect();
+            $stmt = $dbh->prepare($sql);
+            $stmt->bindValue(':id_member',$id_member,PDO::PARAM_STR);
+            $result = $stmt->execute();
             return $result;
         }catch(\PDOException $e){
             echo $e->getMessage();
@@ -79,7 +102,7 @@ require_once '/Applications/MAMP/htdocs/post_travel/config/dbconnect.php';
         }
             $_SESSION['msg'] = 'パスワードが一致しません。';
             return $result;
-    }
+    } 
 
         /**
      * ログインチェック

@@ -481,19 +481,24 @@ foreach($cntPref as $key => $val){
     
 <div class ="content">
     <div class = "map">
-        <div class ="color-map">
-          <h3>件数によって色が異なります</h3>
-          <ol>
-            <li id="color" class="one">なし</li>
-            <li id="color" class="two">1件</li>
-            <li id="color" class="three">2~3件</li>
-            <li id="color" class="four">4~6件</li>
-            <li id="color" class="five">7~10件</li>
-            <li id="color" class="six">11~15件</li>
-            <li id="color" class="seven">15件以上</li>
-          </ol>  
-            
-        </div>  
+        <div class="hidden-box">
+            <label for ="label1"><i class="fa-solid fa-circle-question hint-btn"></i></label>
+                <input type="checkbox" id="label1" />
+            <div class="hidden-show">
+                <div class ="color-map">
+                    <h3>件数によって色が異なります</h3>
+                    <ol>
+                        <li id="color" class="one">なし</li>
+                        <li id="color" class="two">1件</li>
+                        <li id="color" class="three">2~3件</li>
+                        <li id="color" class="four">4~6件</li>
+                        <li id="color" class="five">7~10件</li>
+                        <li id="color" class="six">11~15件</li>
+                        <li id="color" class="seven">15件以上</li>
+                    </ol>  
+                </div>  
+            </div>    
+        </div>    
         <div class ="japan">
             <style>
             #hokkaido  { fill:<?php echo $hokkaido?>  } #hokkaido:hover  { fill:#39A869;}
@@ -620,7 +625,11 @@ foreach($cntPref as $key => $val){
 
 <footer>
     <div class ="footer2">
-        <p>&copy; 2022 oiwa</p>
+        <p>&copy; 2022 oiwa
+            &nbsp;&nbsp; <a href ="../config/terms.php" class="footer-link">利用規約</a>
+            &nbsp;&nbsp; <a href ="../config/privacy.php" class="footer-link">プライバシーポリシー</a>
+            &nbsp;&nbsp; <a href ="http://oiwa1105.com/script/mailform/contact/" class="footer-link">お問い合わせ</a></p>
+
     </div>
 </footer> 
 
