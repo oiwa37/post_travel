@@ -2,7 +2,7 @@
 session_start();
 require_once '../classes/login_class.php';
 
-//ログイン状態であればマイページへ移動
+//ログイン状態であればマイページへ遷移
 $login = new LoginClass('member');
 $result = $login->checkLogin();
 if($result){
@@ -12,9 +12,9 @@ if($result){
 
 $err = $_SESSION;
 
-//配列を消す(エラーメッセージを一度のみ表示に)
+//配列を消す(エラーメッセージを一度のみ表示にするため)
 $_SESSION = array();
-//セッションファイルを消す
+//セッションファイルを削除
 session_destroy();
 
 ?>
@@ -52,7 +52,7 @@ session_destroy();
                 <form method="POST" action ="login.php">
                 <input type ="hidden" name="email" value="guest@guest.com">
                 <input type ="hidden" name="password"  value="111111">
-                <input type ="submit" name ="guest_login" value ="ゲストログイン" class="guest-login">
+                <input type ="submit" name ="top_login" value ="ゲストログイン" class="top-login">
             </form></li>
             </ol>
         </nav> 
@@ -61,9 +61,11 @@ session_destroy();
 
 
 
-    <div class ="login-form">
-        <h2>ログイン</h2>
-
+<div class ="login-form">
+    <h2>ログイン</h2>
+    <?php if(isset($err['msg'])):?>
+    <p class="err-msg"><?php echo $err['msg'];?></p>
+    <?php endif;?>
     <form method="POST" action ="login.php">
         <p>
             <label for="email"></label>
@@ -84,8 +86,7 @@ session_destroy();
         </p>
         <a class ="register-button" href="register_form.php">新規登録はこちら</a>
     </form>
-
-    </div>
+</div>
 
 
 <footer>
@@ -94,7 +95,6 @@ session_destroy();
             &nbsp;&nbsp; <a href ="../config/terms.php" class="footer-link">利用規約</a>
             &nbsp;&nbsp; <a href ="../config/privacy.php" class="footer-link">プライバシーポリシー</a>
             &nbsp;&nbsp; <a href ="http://oiwa1105.com/script/mailform/contact/" class="footer-link">お問い合わせ</a></p>
-
     </div>
 </footer> 
 

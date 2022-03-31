@@ -9,8 +9,7 @@ require_once '../classes/login_class.php';
 require_once '../classes/prefecture_class.php';
 
 
-
-//ログインしているか判定し、していなければ新規登録画面へ ｓ
+//ログインしているか判定し、していなければ新規登録画面へ遷移
 $login = new LoginClass('member');
 $result = $login->checkLogin();
 if(!$result){
@@ -20,7 +19,6 @@ if(!$result){
 }
 $login_user = $_SESSION['login_user'];
 $id_member = $login_user['id_member'];
-
 
 
 
@@ -82,11 +80,10 @@ foreach($getPref as $pref => $color){
     }
 }
 
-//DBに色を保存するために県名を＄_GETで受け取る
-//color-formクラスでprefchange.phpに色データを送信
+
+//DBに色を保存するために県名を＄_GETで受け取り、ローマ字から漢字に変換
 if(!empty($_GET['prefecture'])){
     $pref_name = $_GET['prefecture']; 
-    
 }
 $pref_change = changePrefName($pref_name);
 
@@ -117,6 +114,8 @@ if(!empty($articleData)){
 }else{
     $filterData = '記事が投稿されていません。';
 }
+
+
 
 ?>
 
@@ -168,14 +167,14 @@ if(!empty($articleData)){
 
 <div class ="content" >
     <div class = "map"> 
-    <div class="hidden-box">
-                <label for ="label1"><i class="fa-solid fa-circle-question hint-btn"></i></label>
-                <input type="checkbox" id="label1" />
-                <div class="hidden-show">
-                    <p>県をクリックすることで、県別の記事が見れます！</p>
-                    <p>県別の記事ページで色をつけることができます。</p>
-                </div>    
+        <div class="hidden-box">
+            <label for ="label1"><i class="fa-solid fa-circle-question hint-btn"></i></label>
+            <input type="checkbox" id="label1" />
+            <div class="hidden-show">
+                <p>県をクリックすることで、県別の記事が見れます！</p>
+                <p>県別の記事ページで色をつけることができます。</p>
             </div>    
+        </div>    
         <div class ="japan">
             <style>
             #hokkaido  { fill:<?php echo $hokkaido?>  } #hokkaido:hover  { fill:#39A869;}
@@ -302,6 +301,7 @@ if(!empty($articleData)){
                         <!-- <td><img src="<?php echo $imageURL.($column['image']); ?>" alt="" ></td> -->
                     </table>
                 <?php endforeach; ?>
+                <!-- ページネーション -->
                 <div> 
                     <?php 
                     $page = 1; //初期ページ
@@ -374,10 +374,11 @@ if(!empty($articleData)){
                 </div>
             <?php else :?>
             </div>  
-                <div class ="notYet">
+            <div class ="notYet">
                 <p><?php echo $filterData;?> </p>
                 <p></p><a href ="./form.php" class="newpost-btn">新規投稿をする</a></p>
-            <?php endif; ?>
+                <?php endif; ?>
+            </div>
         </div>
     </div>
 </div>
@@ -388,7 +389,6 @@ if(!empty($articleData)){
             &nbsp;&nbsp; <a href ="../config/terms.php" class="footer-link">利用規約</a>
             &nbsp;&nbsp; <a href ="../config/privacy.php" class="footer-link">プライバシーポリシー</a>
             &nbsp;&nbsp; <a href ="http://oiwa1105.com/script/mailform/contact/" class="footer-link">お問い合わせ</a></p>
-
     </div>
 </footer> 
 </body>

@@ -8,7 +8,6 @@ require_once '../classes/login_class.php';
 
 
 //トークンを受け取り、値が一致しているか確認
-
 $token = filter_input(INPUT_POST,'csrf_token');
 if(!isset($_SESSION['csrf_token'])||$token !==$_SESSION['csrf_token']){
     exit('不正なリクエストです');
@@ -110,7 +109,11 @@ if(count($err) === 0){
 </div>
     <footer>
     <div class ="footer">
-        <p>&copy; 2022 oiwa</p>
+    <p>&copy; 2022 oiwa
+            &nbsp;&nbsp; <a href ="../config/terms.php" class="footer-link">利用規約</a>
+            &nbsp;&nbsp; <a href ="../config/privacy.php" class="footer-link">プライバシーポリシー</a>
+            &nbsp;&nbsp; <a href ="http://oiwa1105.com/script/mailform/contact/" class="footer-link">お問い合わせ</a></p>
+
     </div>
 </footer> 
 

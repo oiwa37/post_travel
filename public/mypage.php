@@ -9,7 +9,7 @@ require_once '../classes/login_class.php';
 require_once '../classes/prefecture_class.php';
 
 
-//ログインしているか判定し、していなければ新規登録画面へ ｓ
+//ログインしているか判定し、していなければ新規登録画面へ
 $login = new LoginClass('member');
 $result = $login->checkLogin();
 if(!$result){
@@ -103,7 +103,6 @@ foreach($getPref as $pref => $color){
         if ($pref == 'saga'){ $saga = $color;}
         if ($pref == 'nagasaki'){ $nagasaki = $color;}
         if ($pref == 'okinawa'){ $okinawa = $color;}
-
     }
 }
 

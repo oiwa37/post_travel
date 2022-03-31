@@ -233,38 +233,36 @@ foreach($getPref as $pref => $color){
     </div>
 
     <div class="content-right">
-      <h2>新規投稿</h2>
-      <div class="blog-form">
-        <form action="./imageResize/newpost.php" method="POST" enctype="multipart/form-data">
-            <input type="hidden" name="id_member" value="<?php echo $id_member; ?>">
-            <p>タイトル<div class="err_text" id="err_textbox"></div></p>
-            <p><input type="text" name="title" class="blog-title" id="textbox"></p>
-            <p>県を選ぶ</p>
-            <p><?php select_prefecture(); ?></p>
-            <p>本文<div class="err_text" id="err_textarea"></div></p>
-            <!-- cols=文字数 rows=行数 -->
-            <p><textarea name="content"  cols=90" rows="10" class="blog-text" id="textarea"></textarea></p>
-            <p><input name="image" type="file" accept="image/*"></p>
-            <p><input type="radio" name="post_status" value="1" checked >公開
-            <input type="radio" name="post_status" value="2" >非公開
-            <input type="submit" value="この内容で投稿する" class="post-button"></p>
-        </form>
-    </div>
-  </div>  
+        <h2>新規投稿</h2>
+        <div class="blog-form">
+            <form action="./imageResize/newpost.php" method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="id_member" value="<?php echo $id_member; ?>">
+                <p>タイトル<div class="err_text" id="err_textbox"></div></p>
+                <p><input type="text" name="title" class="blog-title" id="textbox"></p>
+                <p>県を選ぶ</p>
+                <p><?php select_prefecture(); ?></p>
+                <p>本文<div class="err_text" id="err_textarea"></div></p>
+                <!-- cols=文字数 rows=行数 -->
+                <p><textarea name="content"  cols=90" rows="10" class="blog-text" id="textarea"></textarea></p>
+                <p><input name="image" type="file" accept="image/*"></p>
+                <p><input type="radio" name="post_status" value="1" checked >公開
+                <input type="radio" name="post_status" value="2" >非公開
+                <input type="submit" value="この内容で投稿する" class="post-button"></p>
+            </form>
+        </div>
+    </div>  
 </div>
 
 
-
-
 <footer>
-  <div class ="footer3">
+    <div class ="footer3">
     <p>&copy; 2022 oiwa
         &nbsp;&nbsp; <a href ="../config/terms.php" class="footer-link">利用規約</a>
         &nbsp;&nbsp; <a href ="../config/privacy.php" class="footer-link">プライバシーポリシー</a>
         &nbsp;&nbsp; <a href ="http://oiwa1105.com/script/mailform/contact/" class="footer-link">お問い合わせ</a></p>
-
-  </div>
+    </div>
 </footer>
+
 
 <script>
 $(function(){
@@ -314,6 +312,4 @@ function check_textarea(str){
 
 </script>
 </body>
-
-
 </html>

@@ -57,7 +57,7 @@ unset($_SESSION['login_err']);
                 <form method="POST" action ="login.php">
                 <input type ="hidden" name="email" value="guest@guest.com">
                 <input type ="hidden" name="password"  value="111111">
-                <input type ="submit" name ="guest_login" value ="ゲストログイン" class="guest-login">
+                <input type ="submit" name ="top_login" value ="ゲストログイン" class="top-login">
             </form></li>
             </ol>
         </nav> 

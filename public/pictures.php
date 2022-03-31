@@ -8,7 +8,7 @@ require_once '../classes/article_class.php';
 require_once '../classes/login_class.php';
 
 
-//ログインしているか判定し、していなければ新規登録画面へ
+//ログインしているか判定し、していなければ新規登録画面へ遷移
 $login = new LoginClass('member');
 $result = $login->checkLogin();
 if(!$result){
@@ -16,14 +16,16 @@ if(!$result){
     header('Location:register_form.php');
     return;
 }
-$login_user = $_SESSION['login_user'];
+$login_user = $_SESSION['login_user']; //ユーザ情報を格納
 
 
+//公開ステータスの画像付き投稿を取得
 $art = new Article('article','member');
 $articleData = $art->getPicture();
 $imageURL = '/post_travel/public/imageResize/'.'new';
 
 
+//ページネーション
 //メンバーのデータ総数から1ページあたり5件とし最大ページ数を取得
 $dbh = $art->dbconnect();
 $count_sql = 'SELECT COUNT(*) as cnt FROM article 
@@ -34,247 +36,231 @@ $per_page = 8; //1ページあたりの件数
 $max_page = ceil($count['cnt'] / $per_page);
 //現在表示しているページ番号
 $page = empty($_GET['page']) ? 1 : (int) $_GET['page'];
-
 $filterData = $art->filter($page, $per_page, $articleData);
 
 
 
 //DBから県カラムを取得、県ごとに投稿件数をカウント
 //カウント数に応じて色を代入し、cssに反映させる。
-function getPref(){
-  try{
-    $art = new Article('article');
-    $dbh = $art->dbconnect();
-    $sql = 'SELECT prefecture FROM article';
-    $stmt = $dbh->prepare($sql);
-    $stmt->execute();
-    $result =  $stmt->fetchAll(PDO::FETCH_ASSOC);
-    return $result;
-    $dbh = null;
-  }catch(\PDOException $e){
-  echo $e->getMessage();
-  return  false;   
-}
-}
-
-
+$pref_class = new Prefecture('aricle');
 $pref = [];
-$pref = getPref();
+$pref = $pref_class->getPref();
 $pref = array_column($pref,'prefecture'); //「カラム名=>値」の形にする
 $pref = array_map(fn ($x) => (string)$x, $pref); //値をstring型にする
 $cntPref = array_count_values($pref); //配列における値の出現回数を値とした連想配列を返す
 
-//出現回数ごとに色を代入
+
+//投稿件数ごとに色を代入
 foreach($cntPref as $key => $val){
 
   switch($val){
 
-      case 1:
-          $color = '#F2E55C';
-          if ($key=='北海道'){ $hokkaido = $color;}
-          if ($key=='青森県'){ $aomori = $color;}
-          if ($key=='岩手県'){ $iwate = $color;}
-          if ($key=='秋田県'){ $akita = $color;}
-          if ($key=='宮城県'){ $miyagi = $color;}
-          if ($key=='山形県'){ $yamagata = $color;}
-          if ($key=='福島県'){ $Fukushima = $color;}
-          if ($key=='新潟県'){ $niigata = $color;}
-          if ($key=='茨城県'){ $ibaraki = $color;}
-          if ($key=='栃木県'){ $tochigi = $color;}
-          if ($key=='群馬県'){ $gunma = $color;}
-          if ($key=='千葉県'){ $chiba = $color;}
-          if ($key=='埼玉県'){ $saitama = $color;}
-          if ($key=='東京都'){ $tokyo = $color;}
-          if ($key=='神奈川県'){$kanagawa = $color;}
-          if ($key=='山梨県'){ $yamanashi = $color;}
-          if ($key=='長野県'){ $nagano = $color;}
-          if ($key=='富山県'){ $toyama = $color;}
-          if ($key=='石川県'){ $ishikawa = $color;}
-          if ($key=='静岡県'){ $shizuoka = $color;}
-          if ($key=='愛知県'){ $aichi = $color;}
-          if ($key=='岐阜県'){ $gifu = $color;}
-          if ($key=='福井県'){ $fukui = $color;}
-          if ($key=='滋賀県'){ $shiga = $color;}
-          if ($key=='三重県'){ $mie = $color;}
-          if ($key=='和歌山県'){$wakayama = $color;}
-          if ($key=='奈良県'){ $nara = $color;}
-          if ($key=='京都府'){ $kyoto = $color;}
-          if ($key=='大阪府'){ $osaka = $color;}
-          if ($key=='兵庫県'){ $hyogo = $color;}
-          if ($key=='岡山県'){ $okayama = $color;}
-          if ($key=='広島県'){ $hiroshima = $color;}
-          if ($key=='山口県'){ $yamaguchi = $color;}
-          if ($key=='鳥取県'){ $tottori = $color;}
-          if ($key=='島根県'){ $shimane = $color;}
-          if ($key=='香川県'){ $kagawa = $color;}
-          if ($key=='徳島県'){ $tokushima = $color;}
-          if ($key=='愛媛県'){ $ehime = $color;}
-          if ($key=='高知県'){ $kochi = $color;}
-          if ($key=='福岡県'){ $fukuoka = $color;}
-          if ($key=='大分県'){ $oita = $color;}
-          if ($key=='宮崎県'){ $miyazaki = $color;}
-          if ($key=='鹿児島県'){$kagoshima = $color;}
-          if ($key=='熊本県'){ $kumamoto = $color;}
-          if ($key=='佐賀県'){ $saga = $color;}
-          if ($key=='長崎県'){ $nagasaki = $color;}
-          if ($key=='沖縄県'){ $okinawa = $color;}
-      break;
+  case 1:
+      $color = '#F2E55C';
+      if ($key=='北海道'){ $hokkaido = $color;}
+      if ($key=='青森県'){ $aomori = $color;}
+      if ($key=='岩手県'){ $iwate = $color;}
+      if ($key=='秋田県'){ $akita = $color;}
+      if ($key=='宮城県'){ $miyagi = $color;}
+      if ($key=='山形県'){ $yamagata = $color;}
+      if ($key=='福島県'){ $Fukushima = $color;}
+      if ($key=='新潟県'){ $niigata = $color;}
+      if ($key=='茨城県'){ $ibaraki = $color;}
+      if ($key=='栃木県'){ $tochigi = $color;}
+      if ($key=='群馬県'){ $gunma = $color;}
+      if ($key=='千葉県'){ $chiba = $color;}
+      if ($key=='埼玉県'){ $saitama = $color;}
+      if ($key=='東京都'){ $tokyo = $color;}
+      if ($key=='神奈川県'){$kanagawa = $color;}
+      if ($key=='山梨県'){ $yamanashi = $color;}
+      if ($key=='長野県'){ $nagano = $color;}
+      if ($key=='富山県'){ $toyama = $color;}
+      if ($key=='石川県'){ $ishikawa = $color;}
+      if ($key=='静岡県'){ $shizuoka = $color;}
+      if ($key=='愛知県'){ $aichi = $color;}
+      if ($key=='岐阜県'){ $gifu = $color;}
+      if ($key=='福井県'){ $fukui = $color;}
+      if ($key=='滋賀県'){ $shiga = $color;}
+      if ($key=='三重県'){ $mie = $color;}
+      if ($key=='和歌山県'){$wakayama = $color;}
+      if ($key=='奈良県'){ $nara = $color;}
+      if ($key=='京都府'){ $kyoto = $color;}
+      if ($key=='大阪府'){ $osaka = $color;}
+      if ($key=='兵庫県'){ $hyogo = $color;}
+      if ($key=='岡山県'){ $okayama = $color;}
+      if ($key=='広島県'){ $hiroshima = $color;}
+      if ($key=='山口県'){ $yamaguchi = $color;}
+      if ($key=='鳥取県'){ $tottori = $color;}
+      if ($key=='島根県'){ $shimane = $color;}
+      if ($key=='香川県'){ $kagawa = $color;}
+      if ($key=='徳島県'){ $tokushima = $color;}
+      if ($key=='愛媛県'){ $ehime = $color;}
+      if ($key=='高知県'){ $kochi = $color;}
+      if ($key=='福岡県'){ $fukuoka = $color;}
+      if ($key=='大分県'){ $oita = $color;}
+      if ($key=='宮崎県'){ $miyazaki = $color;}
+      if ($key=='鹿児島県'){$kagoshima = $color;}
+      if ($key=='熊本県'){ $kumamoto = $color;}
+      if ($key=='佐賀県'){ $saga = $color;}
+      if ($key=='長崎県'){ $nagasaki = $color;}
+      if ($key=='沖縄県'){ $okinawa = $color;}
+  break;
 
-      case 2:
-      case 3:
-        $color = ' #E8AC51';
-        if ($key=='北海道'){ $hokkaido = $color;}
-        if ($key=='青森県'){ $aomori = $color;}
-        if ($key=='岩手県'){ $iwate = $color;}
-        if ($key=='秋田県'){ $akita = $color;}
-        if ($key=='宮城県'){ $miyagi = $color;}
-        if ($key=='山形県'){ $yamagata = $color;}
-        if ($key=='福島県'){ $fukushima = $color;}
-        if ($key=='新潟県'){ $niigata = $color;}
-        if ($key=='茨城県'){ $ibaraki = $color;}
-        if ($key=='栃木県'){ $tochigi = $color;}
-        if ($key=='群馬県'){ $gunma = $color;}
-        if ($key=='千葉県'){ $chiba = $color;}
-        if ($key=='埼玉県'){ $saitama = $color;}
-        if ($key=='東京都'){ $tokyo = $color;}
-        if ($key=='神奈川県'){$kanagawa = $color;}
-        if ($key=='山梨県'){ $yamanashi = $color;}
-        if ($key=='長野県'){ $nagano = $color;}
-        if ($key=='富山県'){ $toyama = $color;}
-        if ($key=='石川県'){ $ishikawa = $color;}
-        if ($key=='静岡県'){ $shizuoka = $color;}
-        if ($key=='愛知県'){ $aichi = $color;}
-        if ($key=='岐阜県'){ $gifu = $color;}
-        if ($key=='福井県'){ $fukui = $color;}
-        if ($key=='滋賀県'){ $shiga = $color;}
-        if ($key=='三重県'){ $mie = $color;}
-        if ($key=='和歌山県'){$wakayama = $color;}
-        if ($key=='奈良県'){ $nara = $color;}
-        if ($key=='京都府'){ $kyoto = $color;}
-        if ($key=='大阪府'){ $osaka = $color;}
-        if ($key=='兵庫県'){ $hyogo = $color;}
-        if ($key=='岡山県'){ $okayama = $color;}
-        if ($key=='広島県'){ $hiroshima = $color;}
-        if ($key=='山口県'){ $yamaguchi = $color;}
-        if ($key=='鳥取県'){ $tottori = $color;}
-        if ($key=='島根県'){ $shimane = $color;}
-        if ($key=='香川県'){ $kagawa = $color;}
-        if ($key=='徳島県'){ $tokushima = $color;}
-        if ($key=='愛媛県'){ $ehime = $color;}
-        if ($key=='高知県'){ $kochi = $color;}
-        if ($key=='福岡県'){ $fukuoka = $color;}
-        if ($key=='大分県'){ $oita = $color;}
-        if ($key=='宮崎県'){ $miyazaki = $color;}
-        if ($key=='鹿児島県'){$kagoshima = $color;}
-        if ($key=='熊本県'){ $kumamoto = $color;}
-        if ($key=='佐賀県'){ $saga = $color;}
-        if ($key=='長崎県'){ $nagasaki = $color;}
-        if ($key=='沖縄県'){ $okinawa = $color;}
-     break;
+  case 2:
+  case 3:
+      $color = ' #E8AC51';
+      if ($key=='北海道'){ $hokkaido = $color;}
+      if ($key=='青森県'){ $aomori = $color;}
+      if ($key=='岩手県'){ $iwate = $color;}
+      if ($key=='秋田県'){ $akita = $color;}
+      if ($key=='宮城県'){ $miyagi = $color;}
+      if ($key=='山形県'){ $yamagata = $color;}
+      if ($key=='福島県'){ $fukushima = $color;}
+      if ($key=='新潟県'){ $niigata = $color;}
+      if ($key=='茨城県'){ $ibaraki = $color;}
+      if ($key=='栃木県'){ $tochigi = $color;}
+      if ($key=='群馬県'){ $gunma = $color;}
+      if ($key=='千葉県'){ $chiba = $color;}
+      if ($key=='埼玉県'){ $saitama = $color;}
+      if ($key=='東京都'){ $tokyo = $color;}
+      if ($key=='神奈川県'){$kanagawa = $color;}
+      if ($key=='山梨県'){ $yamanashi = $color;}
+      if ($key=='長野県'){ $nagano = $color;}
+      if ($key=='富山県'){ $toyama = $color;}
+      if ($key=='石川県'){ $ishikawa = $color;}
+      if ($key=='静岡県'){ $shizuoka = $color;}
+      if ($key=='愛知県'){ $aichi = $color;}
+      if ($key=='岐阜県'){ $gifu = $color;}
+      if ($key=='福井県'){ $fukui = $color;}
+      if ($key=='滋賀県'){ $shiga = $color;}
+      if ($key=='三重県'){ $mie = $color;}
+      if ($key=='和歌山県'){$wakayama = $color;}
+      if ($key=='奈良県'){ $nara = $color;}
+      if ($key=='京都府'){ $kyoto = $color;}
+      if ($key=='大阪府'){ $osaka = $color;}
+      if ($key=='兵庫県'){ $hyogo = $color;}
+      if ($key=='岡山県'){ $okayama = $color;}
+      if ($key=='広島県'){ $hiroshima = $color;}
+      if ($key=='山口県'){ $yamaguchi = $color;}
+      if ($key=='鳥取県'){ $tottori = $color;}
+      if ($key=='島根県'){ $shimane = $color;}
+      if ($key=='香川県'){ $kagawa = $color;}
+      if ($key=='徳島県'){ $tokushima = $color;}
+      if ($key=='愛媛県'){ $ehime = $color;}
+      if ($key=='高知県'){ $kochi = $color;}
+      if ($key=='福岡県'){ $fukuoka = $color;}
+      if ($key=='大分県'){ $oita = $color;}
+      if ($key=='宮崎県'){ $miyazaki = $color;}
+      if ($key=='鹿児島県'){$kagoshima = $color;}
+      if ($key=='熊本県'){ $kumamoto = $color;}
+      if ($key=='佐賀県'){ $saga = $color;}
+      if ($key=='長崎県'){ $nagasaki = $color;}
+      if ($key=='沖縄県'){ $okinawa = $color;}
+  {} break;
 
-      case $val < 7:
-          $color = '#e7624a';
-          if ($key=='北海道'){ $hokkaido = $color;}
-          if ($key=='青森県'){ $aomori = $color;}
-          if ($key=='岩手県'){ $iwate = $color;}
-          if ($key=='秋田県'){ $akita = $color;}
-          if ($key=='宮城県'){ $miyagi = $color;}
-          if ($key=='山形県'){ $yamagata = $color;}
-          if ($key=='福島県'){ $fukushima = $color;}
-          if ($key=='新潟県'){ $niigata = $color;}
-          if ($key=='茨城県'){ $ibaraki = $color;}
-          if ($key=='栃木県'){ $tochigi = $color;}
-          if ($key=='群馬県'){ $gunma = $color;}
-          if ($key=='千葉県'){ $chiba = $color;}
-          if ($key=='埼玉県'){ $saitama = $color;}
-          if ($key=='東京都'){ $tokyo = $color;}
-          if ($key=='神奈川県'){$kanagawa = $color;}
-          if ($key=='山梨県'){ $yamanashi = $color;}
-          if ($key=='長野県'){ $nagano = $color;}
-          if ($key=='富山県'){ $toyama = $color;}
-          if ($key=='石川県'){ $ishikawa = $color;}
-          if ($key=='静岡県'){ $shizuoka = $color;}
-          if ($key=='愛知県'){ $aichi = $color;}
-          if ($key=='岐阜県'){ $gifu = $color;}
-          if ($key=='福井県'){ $fukui = $color;}
-          if ($key=='滋賀県'){ $shiga = $color;}
-          if ($key=='三重県'){ $mie = $color;}
-          if ($key=='和歌山県'){$wakayama = $color;}
-          if ($key=='奈良県'){ $nara = $color;}
-          if ($key=='京都府'){ $kyoto = $color;}
-          if ($key=='大阪府'){ $osaka = $color;}
-          if ($key=='兵庫県'){ $hyogo = $color;}
-          if ($key=='岡山県'){ $okayama = $color;}
-          if ($key=='広島県'){ $hiroshima = $color;}
-          if ($key=='山口県'){ $yamaguchi = $color;}
-          if ($key=='鳥取県'){ $tottori = $color;}
-          if ($key=='島根県'){ $shimane = $color;}
-          if ($key=='香川県'){ $kagawa = $color;}
-          if ($key=='徳島県'){ $tokushima = $color;}
-          if ($key=='愛媛県'){ $ehime = $color;}
-          if ($key=='高知県'){ $kochi = $color;}
-          if ($key=='福岡県'){ $fukuoka = $color;}
-          if ($key=='大分県'){ $oita = $color;}
-          if ($key=='宮崎県'){ $miyazaki = $color;}
-          if ($key=='鹿児島県'){$kagoshima = $color;}
-          if ($key=='熊本県'){ $kumamoto = $color;}
-          if ($key=='佐賀県'){ $saga = $color;}
-          if ($key=='長崎県'){ $nagasaki = $color;}
-          if ($key=='沖縄県'){ $okinawa = $color;}
-      break;
+  case $val < 7:
+      $color = '#e7624a';
+      if ($key=='北海道'){ $hokkaido = $color;}
+      if ($key=='青森県'){ $aomori = $color;}
+      if ($key=='岩手県'){ $iwate = $color;}
+      if ($key=='秋田県'){ $akita = $color;}
+      if ($key=='宮城県'){ $miyagi = $color;}
+      if ($key=='山形県'){ $yamagata = $color;}
+      if ($key=='福島県'){ $fukushima = $color;}
+      if ($key=='新潟県'){ $niigata = $color;}
+      if ($key=='茨城県'){ $ibaraki = $color;}
+      if ($key=='栃木県'){ $tochigi = $color;}
+      if ($key=='群馬県'){ $gunma = $color;}
+      if ($key=='千葉県'){ $chiba = $color;}
+      if ($key=='埼玉県'){ $saitama = $color;}
+      if ($key=='東京都'){ $tokyo = $color;}
+      if ($key=='神奈川県'){$kanagawa = $color;}
+      if ($key=='山梨県'){ $yamanashi = $color;}
+      if ($key=='長野県'){ $nagano = $color;}
+      if ($key=='富山県'){ $toyama = $color;}
+      if ($key=='石川県'){ $ishikawa = $color;}
+      if ($key=='静岡県'){ $shizuoka = $color;}
+      if ($key=='愛知県'){ $aichi = $color;}
+      if ($key=='岐阜県'){ $gifu = $color;}
+      if ($key=='福井県'){ $fukui = $color;}
+      if ($key=='滋賀県'){ $shiga = $color;}
+      if ($key=='三重県'){ $mie = $color;}
+      if ($key=='和歌山県'){$wakayama = $color;}
+      if ($key=='奈良県'){ $nara = $color;}
+      if ($key=='京都府'){ $kyoto = $color;}
+      if ($key=='大阪府'){ $osaka = $color;}
+      if ($key=='兵庫県'){ $hyogo = $color;}
+      if ($key=='岡山県'){ $okayama = $color;}
+      if ($key=='広島県'){ $hiroshima = $color;}
+      if ($key=='山口県'){ $yamaguchi = $color;}
+      if ($key=='鳥取県'){ $tottori = $color;}
+      if ($key=='島根県'){ $shimane = $color;}
+      if ($key=='香川県'){ $kagawa = $color;}
+      if ($key=='徳島県'){ $tokushima = $color;}
+      if ($key=='愛媛県'){ $ehime = $color;}
+      if ($key=='高知県'){ $kochi = $color;}
+      if ($key=='福岡県'){ $fukuoka = $color;}
+      if ($key=='大分県'){ $oita = $color;}
+      if ($key=='宮崎県'){ $miyazaki = $color;}
+      if ($key=='鹿児島県'){$kagoshima = $color;}
+      if ($key=='熊本県'){ $kumamoto = $color;}
+      if ($key=='佐賀県'){ $saga = $color;}
+      if ($key=='長崎県'){ $nagasaki = $color;}
+      if ($key=='沖縄県'){ $okinawa = $color;}
+  break;
 
-    case  $val < 11:
-        $color = '#eb87b6';
-        if ($key=='北海道'){ $hokkaido = $color;}
-        if ($key=='青森県'){ $aomori = $color;}
-        if ($key=='岩手県'){ $iwate = $color;}
-        if ($key=='秋田県'){ $akita = $color;}
-        if ($key=='宮城県'){ $miyagi = $color;}
-        if ($key=='山形県'){ $yamagata = $color;}
-        if ($key=='福島県'){ $fukushima = $color;}
-        if ($key=='新潟県'){ $niigata = $color;}
-        if ($key=='茨城県'){ $ibaraki = $color;}
-        if ($key=='栃木県'){ $tochigi = $color;}
-        if ($key=='群馬県'){ $gunma = $color;}
-        if ($key=='千葉県'){ $chiba = $color;}
-        if ($key=='埼玉県'){ $saitama = $color;}
-        if ($key=='東京都'){ $tokyo = $color;}
-        if ($key=='神奈川県'){$kanagawa = $color;}
-        if ($key=='山梨県'){ $yamanashi = $color;}
-        if ($key=='長野県'){ $nagano = $color;}
-        if ($key=='富山県'){ $toyama = $color;}
-        if ($key=='石川県'){ $ishikawa = $color;}
-        if ($key=='静岡県'){ $shizuoka = $color;}
-        if ($key=='愛知県'){ $aichi = $color;}
-        if ($key=='岐阜県'){ $gifu = $color;}
-        if ($key=='福井県'){ $fukui = $color;}
-        if ($key=='滋賀県'){ $shiga = $color;}
-        if ($key=='三重県'){ $mie = $color;}
-        if ($key=='和歌山県'){$wakayama = $color;}
-        if ($key=='奈良県'){ $nara = $color;}
-        if ($key=='京都府'){ $kyoto = $color;}
-        if ($key=='大阪府'){ $osaka = $color;}
-        if ($key=='兵庫県'){ $hyogo = $color;}
-        if ($key=='岡山県'){ $okayama = $color;}
-        if ($key=='広島県'){ $hiroshima = $color;}
-        if ($key=='山口県'){ $yamaguchi = $color;}
-        if ($key=='鳥取県'){ $tottori = $color;}
-        if ($key=='島根県'){ $shimane = $color;}
-        if ($key=='香川県'){ $kagawa = $color;}
-        if ($key=='徳島県'){ $tokushima = $color;}
-        if ($key=='愛媛県'){ $ehime = $color;}
-        if ($key=='高知県'){ $kochi = $color;}
-        if ($key=='福岡県'){ $fukuoka = $color;}
-        if ($key=='大分県'){ $oita = $color;}
-        if ($key=='宮崎県'){ $miyazaki = $color;}
-        if ($key=='鹿児島県'){$kagoshima = $color;}
-        if ($key=='熊本県'){ $kumamoto = $color;}
-        if ($key=='佐賀県'){ $saga = $color;}
-        if ($key=='長崎県'){ $nagasaki = $color;}
-        if ($key=='沖縄県'){ $okinawa = $color;}
-    break;
+  case  $val < 11:
+      $color = '#eb87b6';
+      if ($key=='北海道'){ $hokkaido = $color;}
+      if ($key=='青森県'){ $aomori = $color;}
+      if ($key=='岩手県'){ $iwate = $color;}
+      if ($key=='秋田県'){ $akita = $color;}
+      if ($key=='宮城県'){ $miyagi = $color;}
+      if ($key=='山形県'){ $yamagata = $color;}
+      if ($key=='福島県'){ $fukushima = $color;}
+      if ($key=='新潟県'){ $niigata = $color;}
+      if ($key=='茨城県'){ $ibaraki = $color;}
+      if ($key=='栃木県'){ $tochigi = $color;}
+      if ($key=='群馬県'){ $gunma = $color;}
+      if ($key=='千葉県'){ $chiba = $color;}
+      if ($key=='埼玉県'){ $saitama = $color;}
+      if ($key=='東京都'){ $tokyo = $color;}
+      if ($key=='神奈川県'){$kanagawa = $color;}
+      if ($key=='山梨県'){ $yamanashi = $color;}
+      if ($key=='長野県'){ $nagano = $color;}
+      if ($key=='富山県'){ $toyama = $color;}
+      if ($key=='石川県'){ $ishikawa = $color;}
+      if ($key=='静岡県'){ $shizuoka = $color;}
+      if ($key=='愛知県'){ $aichi = $color;}
+      if ($key=='岐阜県'){ $gifu = $color;}
+      if ($key=='福井県'){ $fukui = $color;}
+      if ($key=='滋賀県'){ $shiga = $color;}
+      if ($key=='三重県'){ $mie = $color;}
+      if ($key=='和歌山県'){$wakayama = $color;}
+      if ($key=='奈良県'){ $nara = $color;}
+      if ($key=='京都府'){ $kyoto = $color;}
+      if ($key=='大阪府'){ $osaka = $color;}
+      if ($key=='兵庫県'){ $hyogo = $color;}
+      if ($key=='岡山県'){ $okayama = $color;}
+      if ($key=='広島県'){ $hiroshima = $color;}
+      if ($key=='山口県'){ $yamaguchi = $color;}
+      if ($key=='鳥取県'){ $tottori = $color;}
+      if ($key=='島根県'){ $shimane = $color;}
+      if ($key=='香川県'){ $kagawa = $color;}
+      if ($key=='徳島県'){ $tokushima = $color;}
+      if ($key=='愛媛県'){ $ehime = $color;}
+      if ($key=='高知県'){ $kochi = $color;}
+      if ($key=='福岡県'){ $fukuoka = $color;}
+      if ($key=='大分県'){ $oita = $color;}
+      if ($key=='宮崎県'){ $miyazaki = $color;}
+      if ($key=='鹿児島県'){$kagoshima = $color;}
+      if ($key=='熊本県'){ $kumamoto = $color;}
+      if ($key=='佐賀県'){ $saga = $color;}
+      if ($key=='長崎県'){ $nagasaki = $color;}
+      if ($key=='沖縄県'){ $okinawa = $color;}
+  break;
 
-    case  $val < 15 :
+  case  $val < 15 :
       $color = '#66b0f5';
       if ($key=='北海道'){ $hokkaido = $color;}
       if ($key=='青森県'){ $aomori = $color;}
@@ -323,9 +309,9 @@ foreach($cntPref as $key => $val){
       if ($key=='佐賀県'){ $saga = $color;}
       if ($key=='長崎県'){ $nagasaki = $color;}
       if ($key=='沖縄県'){ $okinawa = $color;}
-    break;
+  break;
 
-    case  $val >= 15 :
+  case  $val >= 15 :
       $color = '#9c67e2';
       if ($key=='北海道'){ $hokkaido = $color;}
       if ($key=='青森県'){ $aomori = $color;}
@@ -374,60 +360,59 @@ foreach($cntPref as $key => $val){
       if ($key=='佐賀県'){ $saga = $color;}
       if ($key=='長崎県'){ $nagasaki = $color;}
       if ($key=='沖縄県'){ $okinawa = $color;}
-    break;
+  break;
 
-    default;
-        $color = '#beeba3';
-        if ($key=='北海道'){ $hokkaido = $color;}
-        if ($key=='青森県'){ $aomori = $color;}
-        if ($key=='岩手県'){ $iwate = $color;}
-        if ($key=='秋田県'){ $akita = $color;}
-        if ($key=='宮城県'){ $miyagi = $color;}
-        if ($key=='山形県'){ $yamagata = $color;}
-        if ($key=='福島県'){ $Fukushima = $color;}
-        if ($key=='新潟県'){ $niigata = $color;}
-        if ($key=='茨城県'){ $ibaraki = $color;}
-        if ($key=='栃木県'){ $tochigi = $color;}
-        if ($key=='群馬県'){ $gunma = $color;}
-        if ($key=='千葉県'){ $chiba = $color;}
-        if ($key=='埼玉県'){ $saitama = $color;}
-        if ($key=='東京都'){ $tokyo = $color;}
-        if ($key=='神奈川県'){$kanagawa = $color;}
-        if ($key=='山梨県'){ $yamanashi = $color;}
-        if ($key=='長野県'){ $nagano = $color;}
-        if ($key=='富山県'){ $toyama = $color;}
-        if ($key=='石川県'){ $ishikawa = $color;}
-        if ($key=='静岡県'){ $shizuoka = $color;}
-        if ($key=='愛知県'){ $aichi = $color;}
-        if ($key=='岐阜県'){ $gifu = $color;}
-        if ($key=='福井県'){ $fukui = $color;}
-        if ($key=='滋賀県'){ $shiga = $color;}
-        if ($key=='三重県'){ $mie = $color;}
-        if ($key=='和歌山県'){$wakayama = $color;}
-        if ($key=='奈良県'){ $nara = $color;}
-        if ($key=='京都府'){ $kyoto = $color;}
-        if ($key=='大阪府'){ $osaka = $color;}
-        if ($key=='兵庫県'){ $hyogo = $color;}
-        if ($key=='岡山県'){ $okayama = $color;}
-        if ($key=='広島県'){ $hiroshima = $color;}
-        if ($key=='山口県'){ $yamaguchi = $color;}
-        if ($key=='鳥取県'){ $tottori = $color;}
-        if ($key=='島根県'){ $shimane = $color;}
-        if ($key=='香川県'){ $kagawa = $color;}
-        if ($key=='徳島県'){ $tokushima = $color;}
-        if ($key=='愛媛県'){ $ehime = $color;}
-        if ($key=='高知県'){ $kochi = $color;}
-        if ($key=='福岡県'){ $fukuoka = $color;}
-        if ($key=='大分県'){ $oita = $color;}
-        if ($key=='宮崎県'){ $miyazaki = $color;}
-        if ($key=='鹿児島県'){$kagoshima = $color;}
-        if ($key=='熊本県'){ $kumamoto = $color;}
-        if ($key=='佐賀県'){ $saga = $color;}
-        if ($key=='長崎県'){ $nagasaki = $color;}
-        if ($key=='沖縄県'){ $okinawa = $color;}
-    break;
-  }
-  
+  default;
+      $color = '#beeba3';
+      if ($key=='北海道'){ $hokkaido = $color;}
+      if ($key=='青森県'){ $aomori = $color;}
+      if ($key=='岩手県'){ $iwate = $color;}
+      if ($key=='秋田県'){ $akita = $color;}
+      if ($key=='宮城県'){ $miyagi = $color;}
+      if ($key=='山形県'){ $yamagata = $color;}
+      if ($key=='福島県'){ $Fukushima = $color;}
+      if ($key=='新潟県'){ $niigata = $color;}
+      if ($key=='茨城県'){ $ibaraki = $color;}
+      if ($key=='栃木県'){ $tochigi = $color;}
+      if ($key=='群馬県'){ $gunma = $color;}
+      if ($key=='千葉県'){ $chiba = $color;}
+      if ($key=='埼玉県'){ $saitama = $color;}
+      if ($key=='東京都'){ $tokyo = $color;}
+      if ($key=='神奈川県'){$kanagawa = $color;}
+      if ($key=='山梨県'){ $yamanashi = $color;}
+      if ($key=='長野県'){ $nagano = $color;}
+      if ($key=='富山県'){ $toyama = $color;}
+      if ($key=='石川県'){ $ishikawa = $color;}
+      if ($key=='静岡県'){ $shizuoka = $color;}
+      if ($key=='愛知県'){ $aichi = $color;}
+      if ($key=='岐阜県'){ $gifu = $color;}
+      if ($key=='福井県'){ $fukui = $color;}
+      if ($key=='滋賀県'){ $shiga = $color;}
+      if ($key=='三重県'){ $mie = $color;}
+      if ($key=='和歌山県'){$wakayama = $color;}
+      if ($key=='奈良県'){ $nara = $color;}
+      if ($key=='京都府'){ $kyoto = $color;}
+      if ($key=='大阪府'){ $osaka = $color;}
+      if ($key=='兵庫県'){ $hyogo = $color;}
+      if ($key=='岡山県'){ $okayama = $color;}
+      if ($key=='広島県'){ $hiroshima = $color;}
+      if ($key=='山口県'){ $yamaguchi = $color;}
+      if ($key=='鳥取県'){ $tottori = $color;}
+      if ($key=='島根県'){ $shimane = $color;}
+      if ($key=='香川県'){ $kagawa = $color;}
+      if ($key=='徳島県'){ $tokushima = $color;}
+      if ($key=='愛媛県'){ $ehime = $color;}
+      if ($key=='高知県'){ $kochi = $color;}
+      if ($key=='福岡県'){ $fukuoka = $color;}
+      if ($key=='大分県'){ $oita = $color;}
+      if ($key=='宮崎県'){ $miyazaki = $color;}
+      if ($key=='鹿児島県'){$kagoshima = $color;}
+      if ($key=='熊本県'){ $kumamoto = $color;}
+      if ($key=='佐賀県'){ $saga = $color;}
+      if ($key=='長崎県'){ $nagasaki = $color;}
+      if ($key=='沖縄県'){ $okinawa = $color;}
+  break;
+  }  
 }
 
 
@@ -452,21 +437,21 @@ foreach($cntPref as $key => $val){
         <link href="s.css" rel="stylesheet">
     </head>
 <body>       
-    <header>  
-        <div class ="header">      
-          <div class ="header-left">
+<header>  
+    <div class ="header">      
+        <div class ="header-left">
             <a href ="#"><h1>旅の思い出</h1></a>
             <p>日本地図に色を塗ろう</p>
-          </div>  
-          <nav class ="gnav">
+        </div>  
+        <nav class ="gnav">
             <ol class="menu">
-              <li><a href ="form.php">新規作成</a></li>
-              <li><a href ="mypage.php">自分の投稿</a> </li>
-              <li><a href ="allpost.php">みんなの投稿</a> </li>
-              <li><a href ="pictures.php">写真の投稿</a> </li>
+                <li><a href ="form.php">新規作成</a></li>
+                <li><a href ="mypage.php">自分の投稿</a> </li>
+                <li><a href ="allpost.php">みんなの投稿</a> </li>
+                <li><a href ="pictures.php">写真の投稿</a> </li>
             </ol>
-          </nav>  
-          <div class ="header-right">
+        </nav>  
+        <div class ="header-right">
             <div class="user-info">
                 <p>ログインユーザ:<?php echo h($login_user['name'])?></p>
                 <?php $login_user = h($login_user['email'])?>
@@ -478,79 +463,78 @@ foreach($cntPref as $key => $val){
                 </form>
             </div>
         </div>
-
-        </div>
-    </header> 
+    </div>
+</header> 
     
-    <div class ="content clearfix">
-      <div class = "map">
-      <div class="hidden-box">
+<div class ="content clearfix">
+    <div class = "map">
+        <div class="hidden-box">
             <label for ="label1"><i class="fa-solid fa-circle-question hint-btn"></i></label>
-                <input type="checkbox" id="label1" />
+            <input type="checkbox" id="label1" />
             <div class="hidden-show">
                 <div class ="color-map">
                     <h3>件数によって色が異なります</h3>
-                    <ol>
-                        <li id="color" class="one">なし</li>
-                        <li id="color" class="two">1件</li>
-                        <li id="color" class="three">2~3件</li>
-                        <li id="color" class="four">4~6件</li>
-                        <li id="color" class="five">7~10件</li>
-                        <li id="color" class="six">11~15件</li>
-                        <li id="color" class="seven">15件以上</li>
-                    </ol>  
+                        <ol>
+                            <li id="color" class="one">なし</li>
+                            <li id="color" class="two">1件</li>
+                            <li id="color" class="three">2~3件</li>
+                            <li id="color" class="four">4~6件</li>
+                            <li id="color" class="five">7~10件</li>
+                            <li id="color" class="six">11~15件</li>
+                            <li id="color" class="seven">15件以上</li>
+                        </ol>  
                 </div>  
             </div>    
         </div> 
-    <div class ="japan">
-    <style>
-            #hokkaido  { fill:<?php echo $hokkaido?>  } #hokkaido:hover  { fill:#39A869;}
-            #aomori    { fill:<?php echo $aomori?>    } #aomori:hover    { fill:#39A869;}   
-            #iwate     { fill:<?php echo $iwate?>     } #iwate:hover     { fill:#39A869;}    
-            #akita     { fill:<?php echo $akita?>     } #akita:hover     { fill:#39A869;}    
-            #miyagi    { fill:<?php echo $miyagi?>    } #miyagi:hover    { fill:#39A869;}   
-            #yamagata  { fill:<?php echo $yamagata?>  } #yamagata:hover  { fill:#39A869;} 
-            #fukushima { fill:<?php echo $fukushima?> } #fukushima:hover { fill:#39A869;}
-            #niigata   { fill:<?php echo $niigata?>   } #niigata:hover   { fill:#39A869;}  
-            #ibaraki   { fill:<?php echo $ibaraki?>   } #ibaraki:hover   { fill:#39A869;}  
-            #tochigi   { fill:<?php echo $tochigi?>   } #tochigi:hover   { fill:#39A869;}  
-            #gunma     { fill:<?php echo $gunma?>     } #gunma:hover     { fill:#39A869;}    
-            #chiba     { fill:<?php echo $chiba?>     } #chiba:hover     { fill:#39A869;}    
-            #saitama   { fill:<?php echo $saitama?>   } #saitama:hover   { fill:#39A869;}  
-            #tokyo     { fill:<?php echo $tokyo?>     } #tokyo:hover     { fill:#39A869;}    
-            #kanagawa  { fill:<?php echo $kanagawa?>  } #kanagawa:hover  { fill:#39A869;} 
-            #yamanashi { fill:<?php echo $yamanashi?> } #yamanashi:hover { fill:#39A869;}
-            #nagano    { fill:<?php echo $nagano?>    } #nagano:hover    { fill:#39A869;}   
-            #toyama    { fill:<?php echo $toyama?>    } #toyama:hover    { fill:#39A869;}   
-            #ishikawa  { fill:<?php echo $ishikawa?>  } #ishikawa:hover  { fill:#39A869;} 
-            #shizuoka  { fill:<?php echo $shizuoka?>  } #shizuoka:hover  { fill:#39A869;} 
-            #aichi     { fill:<?php echo $aichi?>     } #aichi:hover     { fill:#39A869;}    
-            #gifu      { fill:<?php echo $gifu?>      } #gifu:hover      { fill:#39A869;}     
-            #Fukui     { fill:<?php echo $fukui?>     } #Fukui:hover     { fill:#39A869;}    
-            #shiga     { fill:<?php echo $shiga?>     } #shiga:hover     { fill:#39A869;}    
-            #mie       { fill:<?php echo $mie?>       } #mie:hover       { fill:#39A869;}      
-            #wakayama  { fill:<?php echo $wakayama?>  } #wakayama:hover  { fill:#39A869;} 
-            #nara      { fill:<?php echo $nara?>      } #nara:hover      { fill:#39A869;}     
-            #kyoto     { fill:<?php echo $kyoto?>     } #kyoto:hover     { fill:#39A869;}    
-            #osaka     { fill:<?php echo $osaka?>     } #osaka:hover     { fill:#39A869;}    
-            #hyogo     { fill:<?php echo $hyogo?>     } #hyogo:hover     { fill:#39A869;}    
-            #okayama   { fill:<?php echo $okayama?>   } #okayama:hover   { fill:#39A869;}  
-            #yamaguchi { fill:<?php echo $yamaguchi?> } #yamaguchi:hover { fill:#39A869;}
-            #hiroshima { fill:<?php echo $hiroshima?> } #hiroshima:hover { fill:#39A869;}
-            #tottori   { fill:<?php echo $tottori?>   } #tottori:hover   { fill:#39A869;}  
-            #shimane   { fill:<?php echo $shimane?>   } #shimane:hover   { fill:#39A869;}  
-            #kagawa    { fill:<?php echo $kagawa?>    } #kagawa:hover    { fill:#39A869;}   
-            #tokushima { fill:<?php echo $tokushima?> } #tokushima:hover { fill:#39A869;}
-            #ehime     { fill:<?php echo $ehime?>     } #ehime:hover     { fill:#39A869;}    
-            #kochi     { fill:<?php echo $kochi?>     } #kochi:hover     { fill:#39A869;}    
-            #fukuoka   { fill:<?php echo $fukuoka?>   } #fukuoka:hover   { fill:#39A869;}  
-            #oita      { fill:<?php echo $oita?>      } #oita:hover      { fill:#39A869;}     
-            #miyazaki  { fill:<?php echo $miyazaki?>  } #miyazaki:hover  { fill:#39A869;} 
-            #kagoshima { fill:<?php echo $kagoshima?>  } #kagoshima:hover { fill:#39A869;}
-            #kumamoto  { fill:<?php echo $kumamoto?>  } #kumamoto:hover  { fill:#39A869;} 
-            #saga      { fill:<?php echo $saga?>      } #saga:hover      { fill:#39A869;}     
-            #nagasaki  { fill:<?php echo $nagasaki?>  } #nagasaki:hover  { fill:#39A869;} 
-            #okinawa   { fill:<?php echo $okinawa?>   } #okinawa:hover   { fill:#39A869;}  
+        <div class ="japan">
+            <style>
+                #hokkaido  { fill:<?php echo $hokkaido?>  } #hokkaido:hover  { fill:#39A869;}
+                #aomori    { fill:<?php echo $aomori?>    } #aomori:hover    { fill:#39A869;}   
+                #iwate     { fill:<?php echo $iwate?>     } #iwate:hover     { fill:#39A869;}    
+                #akita     { fill:<?php echo $akita?>     } #akita:hover     { fill:#39A869;}    
+                #miyagi    { fill:<?php echo $miyagi?>    } #miyagi:hover    { fill:#39A869;}   
+                #yamagata  { fill:<?php echo $yamagata?>  } #yamagata:hover  { fill:#39A869;} 
+                #fukushima { fill:<?php echo $fukushima?> } #fukushima:hover { fill:#39A869;}
+                #niigata   { fill:<?php echo $niigata?>   } #niigata:hover   { fill:#39A869;}  
+                #ibaraki   { fill:<?php echo $ibaraki?>   } #ibaraki:hover   { fill:#39A869;}  
+                #tochigi   { fill:<?php echo $tochigi?>   } #tochigi:hover   { fill:#39A869;}  
+                #gunma     { fill:<?php echo $gunma?>     } #gunma:hover     { fill:#39A869;}    
+                #chiba     { fill:<?php echo $chiba?>     } #chiba:hover     { fill:#39A869;}    
+                #saitama   { fill:<?php echo $saitama?>   } #saitama:hover   { fill:#39A869;}  
+                #tokyo     { fill:<?php echo $tokyo?>     } #tokyo:hover     { fill:#39A869;}    
+                #kanagawa  { fill:<?php echo $kanagawa?>  } #kanagawa:hover  { fill:#39A869;} 
+                #yamanashi { fill:<?php echo $yamanashi?> } #yamanashi:hover { fill:#39A869;}
+                #nagano    { fill:<?php echo $nagano?>    } #nagano:hover    { fill:#39A869;}   
+                #toyama    { fill:<?php echo $toyama?>    } #toyama:hover    { fill:#39A869;}   
+                #ishikawa  { fill:<?php echo $ishikawa?>  } #ishikawa:hover  { fill:#39A869;} 
+                #shizuoka  { fill:<?php echo $shizuoka?>  } #shizuoka:hover  { fill:#39A869;} 
+                #aichi     { fill:<?php echo $aichi?>     } #aichi:hover     { fill:#39A869;}    
+                #gifu      { fill:<?php echo $gifu?>      } #gifu:hover      { fill:#39A869;}     
+                #Fukui     { fill:<?php echo $fukui?>     } #Fukui:hover     { fill:#39A869;}    
+                #shiga     { fill:<?php echo $shiga?>     } #shiga:hover     { fill:#39A869;}    
+                #mie       { fill:<?php echo $mie?>       } #mie:hover       { fill:#39A869;}      
+                #wakayama  { fill:<?php echo $wakayama?>  } #wakayama:hover  { fill:#39A869;} 
+                #nara      { fill:<?php echo $nara?>      } #nara:hover      { fill:#39A869;}     
+                #kyoto     { fill:<?php echo $kyoto?>     } #kyoto:hover     { fill:#39A869;}    
+                #osaka     { fill:<?php echo $osaka?>     } #osaka:hover     { fill:#39A869;}    
+                #hyogo     { fill:<?php echo $hyogo?>     } #hyogo:hover     { fill:#39A869;}    
+                #okayama   { fill:<?php echo $okayama?>   } #okayama:hover   { fill:#39A869;}  
+                #yamaguchi { fill:<?php echo $yamaguchi?> } #yamaguchi:hover { fill:#39A869;}
+                #hiroshima { fill:<?php echo $hiroshima?> } #hiroshima:hover { fill:#39A869;}
+                #tottori   { fill:<?php echo $tottori?>   } #tottori:hover   { fill:#39A869;}  
+                #shimane   { fill:<?php echo $shimane?>   } #shimane:hover   { fill:#39A869;}  
+                #kagawa    { fill:<?php echo $kagawa?>    } #kagawa:hover    { fill:#39A869;}   
+                #tokushima { fill:<?php echo $tokushima?> } #tokushima:hover { fill:#39A869;}
+                #ehime     { fill:<?php echo $ehime?>     } #ehime:hover     { fill:#39A869;}    
+                #kochi     { fill:<?php echo $kochi?>     } #kochi:hover     { fill:#39A869;}    
+                #fukuoka   { fill:<?php echo $fukuoka?>   } #fukuoka:hover   { fill:#39A869;}  
+                #oita      { fill:<?php echo $oita?>      } #oita:hover      { fill:#39A869;}     
+                #miyazaki  { fill:<?php echo $miyazaki?>  } #miyazaki:hover  { fill:#39A869;} 
+                #kagoshima { fill:<?php echo $kagoshima?>  } #kagoshima:hover { fill:#39A869;}
+                #kumamoto  { fill:<?php echo $kumamoto?>  } #kumamoto:hover  { fill:#39A869;} 
+                #saga      { fill:<?php echo $saga?>      } #saga:hover      { fill:#39A869;}     
+                #nagasaki  { fill:<?php echo $nagasaki?>  } #nagasaki:hover  { fill:#39A869;} 
+                #okinawa   { fill:<?php echo $okinawa?>   } #okinawa:hover   { fill:#39A869;}  
             </style>  
             <svg id="map" data-name="japan" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 773.6 846.4">
                 <g><a xlink:href="./allpref.php?prefecture=hokkaido"><title>北海道</title><path class="cls-1" id= "hokkaido" data-name ="hokkaido" d="M653.6,2.6,634.1,18.3l7.4,40.9-9.1,16.6L631,101.2l-13.5,8.6,2.3,29.3-14.4,8-29-16.2-8,8.5,9.4,14-32.7,20.8-1.6,22.3,14.6,23.7-10.1,16,6.9,13.8,25.8-21.8,11.4,6.1,11.9-6.7-21.6-22.2-8.7,3.9L562.9,195,575,178.1l12.6,4.1,7.7,16.5L627.8,180,689,229l25.7-46.8L744,167.3l30.8,5.6,25.7-12.7-13-11.8-5-25.9L796.9,103l-1.7-9.6-26.8,19.3-24.1-8.1L689.8,64.9,672.7,28.3Z" transform="translate(-27.4 -2.1)"/></a></g>
@@ -602,42 +586,35 @@ foreach($cntPref as $key => $val){
                 <g><a xlink:href="./allpref.php?prefecture=nagasaki"><title>長崎県</title><path class="cls-1" id ="nagasaki" data-name ="nagasaki" d="M85.1,691.8l7.3,9.3-2.1,8.1-7.7,1.3-1.4-10.3-9.7,5.3-6.3-20.7-9.1-11,4.2-5.3L68,670l8.4,17.4Z" transform="translate(-27.4 -2.1)"/></a></g>
                 <g><a xlink:href="./allpref.php?prefecture=okinawa"><title>沖縄県</title><path class="cls-1" id ="okinawa" data-name ="okinawa" d="M61.3,806.3l-11.2,9L39.8,812l-3.1,5.4,3.5,6-7.8,6.3L27.9,848l10.6-.3,5.3-17.1,22.4-12.8Z" transform="translate(-27.4 -2.1)"/></a></g>
             </svg>  
+        </div>
     </div>
-      </div>
 
     <div class ="all-pictures">
-    <h2>みんなの写真投稿</h2>
-    <div class = "pictures">
-    <?php foreach($filterData as $column): ?>
-      <ol class = "picture">
-        <li><a href ="detail.php?id_article=<?php echo $column['id_article']; ?>">
-          <img src="<?php echo $imageURL.($column['image']); ?>" alt="" class="image" ></a></li>
-          <li><a href ="detail.php?id_article=<?php echo $column['id_article']; ?>" class ="title"><?php echo titleLimit($column['title']); ?></a></li>
-          <!-- <li><?php echo h($column['post_at']);?></li> -->
-      </ol>  
-    <?php endforeach; ?>
+        <h2>みんなの写真投稿</h2>
+        <div class = "pictures">
+            <?php foreach($filterData as $column): ?>
+                <ol class = "picture">
+                    <li><a href ="detail.php?id_article=<?php echo $column['id_article']; ?>">
+                    <img src="<?php echo $imageURL.($column['image']); ?>" alt="" class="image" ></a></li>
+                    <li><a href ="detail.php?id_article=<?php echo $column['id_article']; ?>" class ="title"><?php echo titleLimit($column['title']); ?></a></li>
+                    <!-- <li><?php echo h($column['post_at']);?></li> -->
+                </ol>  
+            <?php endforeach; ?>
+        </div>
+        <div>
+          <?php $art->paging3($max_page, $page); ?>
+        </div>
     </div>
+</div>
 
-    <div>
-      <?php $art->paging3($max_page, $page); ?>
-    </div>
-    </div>
-
-    </div>
-
-    <footer>
+<footer>
     <div class ="footer2">
         <p>&copy; 2022 oiwa
             &nbsp;&nbsp; <a href ="../config/terms.php" class="footer-link">利用規約</a>
             &nbsp;&nbsp; <a href ="../config/privacy.php" class="footer-link">プライバシーポリシー</a>
             &nbsp;&nbsp; <a href ="http://oiwa1105.com/script/mailform/contact/" class="footer-link">お問い合わせ</a></p>
-
     </div>
 </footer> 
 
-  <!-- javascript
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-    </script> -->
-  </body>
+</body>
 </html>

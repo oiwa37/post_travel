@@ -7,18 +7,19 @@ require_once '../../functions/functions.php';
 require_once '../../classes/article_class.php';
 require_once '../../classes/login_class.php';
 
-// ログインしているか判定し、していなければ新規登録画面へ
+
+// ログインしているか判定し、していなければ新規登録画面へ遷移
 $login = new LoginClass('member');
 $result = $login->checkLogin();
 if(!$result){
-    $_SESSION['login_err'] = 'ユーザ登録してログインして下さい';
+    $_SESSION['login_err'] = 'ユーザー登録してログインして下さい。';
     header('Location:../register_form.php');
     return;
 }
-$login_user = $_SESSION['login_user'];
-$id_member = $login_user['id_member'];
+$login_user = $_SESSION['login_user']; //ユーザ情報を格納
+$id_member = $login_user['id_member']; //ユーザID
 
-//入力エラーがあればform.phpに戻る
+//入力エラーがあれば新規投稿画面(form.php)に戻す
 $title = filter_input(INPUT_POST,'title');
 $content = filter_input(INPUT_POST,'content');
 if($title =="" || mb_strlen($title) > 30 || $content == "" || mb_strlen($content)>1000){
@@ -31,18 +32,15 @@ $image = $_FILES['image'];
 $tmp_path = $image['tmp_name'];
 
 $art = new Article('article');
-// $art->articleValidate($article);
 
-
-//ファイルが存在有無で分岐
+//ファイルの存在有無で分岐
 if(file_exists($tmp_path)){
-    $result = $art->imageValidate($article,$image);
+    $result = $art->imageValidate($article,$image); //画像あり
 }else{
-    $art->newpost($article);
+    $art->newpost($article); //画像なし
 }
-$err_msg = $result;
 
-
+$err_msg = $result; //画像バリデーションのエラーメッセージ
 
 ?>
 
@@ -175,18 +173,14 @@ $err_msg = $result;
     </div>
 </div>  
 
-
-
 <footer>
-  <div class ="footer2">
+    <div class ="footer2">
     <p>&copy; 2022 oiwa
         &nbsp;&nbsp; <a href ="../config/terms.php" class="footer-link">利用規約</a>
         &nbsp;&nbsp; <a href ="../config/privacy.php" class="footer-link">プライバシーポリシー</a>
         &nbsp;&nbsp; <a href ="http://oiwa1105.com/script/mailform/contact/" class="footer-link">お問い合わせ</a></p>
-  </div>
+    </div>
 </footer>
-
-
 
 </body>
 </html>

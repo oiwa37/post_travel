@@ -9,26 +9,29 @@ require_once '../classes/login_class.php';
 require_once '../classes/prefecture_class.php';
 
 
-//ログインしているか判定し、していなければ新規登録画面へ
+//ログインしているか判定し、していなければ新規登録画面へ遷移
 $login = new LoginClass('member');
 $result = $login->checkLogin();
 if(!$result){
-  $_SESSION['login_err'] = 'ユーザ登録してログインして下さい';
-  header('Location:register_form.php');
-  return;
+    $_SESSION['login_err'] = 'ユーザ登録してログインして下さい';
+    header('Location:register_form.php');
+    return;
 }
-$login_user = $_SESSION['login_user'];
-$id_member = $login_user['id_member'];
+$login_user = $_SESSION['login_user']; //ユーザ情報を格納
+$id_member = $login_user['id_member']; //ユーザID
 
+//記事IDから記事詳細を取得
 $art = new Article('article');
 $result = $art->getById($_GET['id_article']);
 $image = $result['image'];
-//画像のパスを指定
 
+//画像のパスを指定
 $imageOrigin ='/post_travel/images/'.$image;
 $imageURL ='/post_travel/public/imageResize/'.'new'.$image;
 $noImage ='/post_travel/japan.png';
 
+//画像有無をチェック
+//画像なし投稿の場合は代わりの画像を表示する
 if(isset($image)){
     $currentImage = $imageURL;
     $imageBig = $imageOrigin;
@@ -36,7 +39,6 @@ if(isset($image)){
     $currentImage = $noImage;
     $imageBig = $noImage;
 }
-
 
 
 //DBに保存されている色をCSSに反映される
@@ -93,12 +95,8 @@ foreach($getPref as $pref => $color){
         if ($pref == 'saga'){ $saga = $color;}
         if ($pref == 'nagasaki'){ $nagasaki = $color;}
         if ($pref == 'okinawa'){ $okinawa = $color;}
-
     }
 }
-
-
-
 
 ?>
 
@@ -140,16 +138,16 @@ foreach($getPref as $pref => $color){
             </ol>
         </nav>
         <div class ="header-right">
-          <div class="user-info">
-            <p>ログインユーザ:<?php echo h($login_user['name'])?></p>
-            <?php $login_user = h($login_user['email'])?>
+            <div class="user-info">
+                <p>ログインユーザ:<?php echo h($login_user['name'])?></p>
+                <?php $login_user = h($login_user['email'])?>
                 <p>メールアドレス:<?php echo addLimit($login_user)?></p>
-          </div>  
-          <div class ="logout">
-              <form method ="POST" action ="logout.php">
-                  <input type ="submit" name ="logout" value =" &#xf08b;" class="logout-btn">
-              </form>
-          </div>
+            </div>  
+            <div class ="logout">
+                <form method ="POST" action ="logout.php">
+                    <input type ="submit" name ="logout" value =" &#xf08b;" class="logout-btn">
+                </form>
+            </div>
         </div>
     </div>  
 </header>
@@ -262,26 +260,24 @@ foreach($getPref as $pref => $color){
 
 
     <div class ="content-detail">
-      <div class ="post-detail">
-        <a href="<?php echo $imageBig; ?>" data-lightbox="post-image" data-title="">
-        <img src="<?php echo $currentImage; ?>" class="det-img" alt="" /></a>
-        <h2 class="det-title"><?php echo $result['title']?></h2>
-        <p class="det-pref"><?php echo $result['prefecture']?></p>
-        <p class="det-user"><?php echo $result['name']?></p>
-        <p class="det-date"><?php echo $result['post_at']?></p>
-        <p class="det-content"><?php echo $result['content']?></p>
-      </div>
+        <div class ="post-detail">
+            <a href="<?php echo $imageBig; ?>" data-lightbox="post-image" data-title="">
+            <img src="<?php echo $currentImage; ?>" class="det-img" alt="" /></a>
+            <h2 class="det-title"><?php echo $result['title']?></h2>
+            <p class="det-pref"><?php echo $result['prefecture']?></p>
+            <p class="det-user"><?php echo $result['name']?></p>
+            <p class="det-date"><?php echo $result['post_at']?></p>
+            <p class="det-content"><?php echo $result['content']?></p>
+        </div>
     </div>
-
 </div>
-    
+
 <footer>
     <div class ="footer2">
         <p>&copy; 2022 oiwa
             &nbsp;&nbsp; <a href ="../config/terms.php" class="footer-link">利用規約</a>
             &nbsp;&nbsp; <a href ="../config/privacy.php" class="footer-link">プライバシーポリシー</a>
             &nbsp;&nbsp; <a href ="http://oiwa1105.com/script/mailform/contact/" class="footer-link">お問い合わせ</a></p>
-
     </div>
 </footer> 
 

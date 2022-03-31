@@ -1,6 +1,7 @@
 <link href="s.css" rel="stylesheet">
 
 <?php
+
 /**
  * 表示する記事の長さを制限する。
  * @param $text  整型したい文字列
@@ -43,7 +44,6 @@ function addLimit($text){
     echo $text;
     }
 }
-
 /**
  * 表示するユーザ名の長さを制限する。
  * @param $text  整型したい文字列
@@ -58,8 +58,6 @@ function userLimit($text){
     echo $text;
     }
 }
-
-
 
 /**
  * XSS対策：エスケープ処理 (配列ver.)
@@ -150,6 +148,7 @@ function select_prefecture(){
     echo '<option value="鹿児島県">鹿児島県</option>';
     echo '<option value="沖縄県">沖縄県</option>';
     echo '</select>';}
+
 
 /**
  * 県名をローマ字から漢字に変換

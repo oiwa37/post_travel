@@ -6,25 +6,29 @@ session_start();
 require_once '../functions/functions.php';
 require_once '../classes/article_class.php';
 require_once '../classes/login_class.php';
+require_once '../classes/prefecture_class.php';
 
 
-//ログインしているか判定し、していなければ新規登録画面へ
+//ログインしているか判定し、していなければ新規登録画面へ遷移
 $login = new LoginClass('member');
 $result = $login->checkLogin();
 if(!$result){
-  $_SESSION['login_err'] = 'ユーザ登録してログインして下さい';
-  header('Location:register_form.php');
-  return; 
+    $_SESSION['login_err'] = 'ユーザ登録してログインして下さい';
+    header('Location:register_form.php');
+    return; 
 }
-$login_user = $_SESSION['login_user'];
-$id_member = $login_user['id_member'];
 
-//全ての記事を取得
+$login_user = $_SESSION['login_user']; //ユーザー情報を格納
+$id_member = $login_user['id_member']; //ユーザーID
+
+
+//公開ステータスの記事を取得
 $art = new Article('article','member');
 $articleData = $art->getAll();
 $imageURL = '/post_travel/images/';
 
 
+//ページネーション
 //公開ステータスのデータ総数から1ページあたり5件とし最大ページ数を取得
 $dbh = $art->dbconnect();
 $count_sql = 'SELECT COUNT(*) as cnt FROM article WHERE post_status = 1';
@@ -32,97 +36,78 @@ $stmt = $dbh->query($count_sql);
 $count = $stmt->fetch(PDO::FETCH_ASSOC);
 $per_page = 5; //1ページあたりの件数
 $max_page = ceil($count['cnt'] / $per_page);
-
 //現在表示しているページ番号
 $page = $page = empty($_GET['page']) ? 1 : (int) $_GET['page'];
-
 $filterData = $art->filter($page, $per_page, $articleData);
 
 
-
-
-//DBから県カラムを取得、県ごとに投稿件数をカウント
-//カウント数に応じて色を代入し、cssに反映させる。
-function getPref(){
-  try{
-    $art = new Article('article');
-    $dbh = $art->dbconnect();
-    $sql = 'SELECT prefecture FROM article';
-    $stmt = $dbh->prepare($sql);
-    $stmt->execute();
-    $result =  $stmt->fetchAll(PDO::FETCH_ASSOC);
-    return $result;
-    $dbh = null;
-  }catch(\PDOException $e){
-  echo $e->getMessage();
-  return  false;   
-}
-}
-
+//DBから県カラムを取得、県ごとに投稿件数をカウント 
+//カウント数に応じて色を代入し、cssに反映させる
+$pref_class = new Prefecture('aricle');
 $pref = [];
-$pref = getPref();
+$pref = $pref_class->getPref();
 $pref = array_column($pref,'prefecture'); //「カラム名=>値」の形にする
 $pref = array_map(fn ($x) => (string)$x, $pref); //値をstring型にする
 $cntPref = array_count_values($pref); //配列における値の出現回数を値とした連想配列を返す
 
-//出現回数ごとに色を代入
+//件数ごとに色を代入
 foreach($cntPref as $key => $val){
 
-  switch($val){
+    switch($val){
 
-      case 1:
-          $color = '#F2E55C';
-          if ($key=='北海道'){ $hokkaido = $color;}
-          if ($key=='青森県'){ $aomori = $color;}
-          if ($key=='岩手県'){ $iwate = $color;}
-          if ($key=='秋田県'){ $akita = $color;}
-          if ($key=='宮城県'){ $miyagi = $color;}
-          if ($key=='山形県'){ $yamagata = $color;}
-          if ($key=='福島県'){ $Fukushima = $color;}
-          if ($key=='新潟県'){ $niigata = $color;}
-          if ($key=='茨城県'){ $ibaraki = $color;}
-          if ($key=='栃木県'){ $tochigi = $color;}
-          if ($key=='群馬県'){ $gunma = $color;}
-          if ($key=='千葉県'){ $chiba = $color;}
-          if ($key=='埼玉県'){ $saitama = $color;}
-          if ($key=='東京都'){ $tokyo = $color;}
-          if ($key=='神奈川県'){$kanagawa = $color;}
-          if ($key=='山梨県'){ $yamanashi = $color;}
-          if ($key=='長野県'){ $nagano = $color;}
-          if ($key=='富山県'){ $toyama = $color;}
-          if ($key=='石川県'){ $ishikawa = $color;}
-          if ($key=='静岡県'){ $shizuoka = $color;}
-          if ($key=='愛知県'){ $aichi = $color;}
-          if ($key=='岐阜県'){ $gifu = $color;}
-          if ($key=='福井県'){ $fukui = $color;}
-          if ($key=='滋賀県'){ $shiga = $color;}
-          if ($key=='三重県'){ $mie = $color;}
-          if ($key=='和歌山県'){$wakayama = $color;}
-          if ($key=='奈良県'){ $nara = $color;}
-          if ($key=='京都府'){ $kyoto = $color;}
-          if ($key=='大阪府'){ $osaka = $color;}
-          if ($key=='兵庫県'){ $hyogo = $color;}
-          if ($key=='岡山県'){ $okayama = $color;}
-          if ($key=='広島県'){ $hiroshima = $color;}
-          if ($key=='山口県'){ $yamaguchi = $color;}
-          if ($key=='鳥取県'){ $tottori = $color;}
-          if ($key=='島根県'){ $shimane = $color;}
-          if ($key=='香川県'){ $kagawa = $color;}
-          if ($key=='徳島県'){ $tokushima = $color;}
-          if ($key=='愛媛県'){ $ehime = $color;}
-          if ($key=='高知県'){ $kochi = $color;}
-          if ($key=='福岡県'){ $fukuoka = $color;}
-          if ($key=='大分県'){ $oita = $color;}
-          if ($key=='宮崎県'){ $miyazaki = $color;}
-          if ($key=='鹿児島県'){$kagoshima = $color;}
-          if ($key=='熊本県'){ $kumamoto = $color;}
-          if ($key=='佐賀県'){ $saga = $color;}
-          if ($key=='長崎県'){ $nagasaki = $color;}
-          if ($key=='沖縄県'){ $okinawa = $color;}
-      break;
+    case 1:
+        $color = '#F2E55C';
+        if ($key=='北海道'){ $hokkaido = $color;}
+        if ($key=='青森県'){ $aomori = $color;}
+        if ($key=='岩手県'){ $iwate = $color;}
+        if ($key=='秋田県'){ $akita = $color;}
+        if ($key=='宮城県'){ $miyagi = $color;}
+        if ($key=='山形県'){ $yamagata = $color;}
+        if ($key=='福島県'){ $Fukushima = $color;}
+        if ($key=='新潟県'){ $niigata = $color;}
+        if ($key=='茨城県'){ $ibaraki = $color;}
+        if ($key=='栃木県'){ $tochigi = $color;}
+        if ($key=='群馬県'){ $gunma = $color;}
+        if ($key=='千葉県'){ $chiba = $color;}
+        if ($key=='埼玉県'){ $saitama = $color;}
+        if ($key=='東京都'){ $tokyo = $color;}
+        if ($key=='神奈川県'){$kanagawa = $color;}
+        if ($key=='山梨県'){ $yamanashi = $color;}
+        if ($key=='長野県'){ $nagano = $color;}
+        if ($key=='富山県'){ $toyama = $color;}
+        if ($key=='石川県'){ $ishikawa = $color;}
+        if ($key=='静岡県'){ $shizuoka = $color;}
+        if ($key=='愛知県'){ $aichi = $color;}
+        if ($key=='岐阜県'){ $gifu = $color;}
+        if ($key=='福井県'){ $fukui = $color;}
+        if ($key=='滋賀県'){ $shiga = $color;}
+        if ($key=='三重県'){ $mie = $color;}
+        if ($key=='和歌山県'){$wakayama = $color;}
+        if ($key=='奈良県'){ $nara = $color;}
+        if ($key=='京都府'){ $kyoto = $color;}
+        if ($key=='大阪府'){ $osaka = $color;}
+        if ($key=='兵庫県'){ $hyogo = $color;}
+        if ($key=='岡山県'){ $okayama = $color;}
+        if ($key=='広島県'){ $hiroshima = $color;}
+        if ($key=='山口県'){ $yamaguchi = $color;}
+        if ($key=='鳥取県'){ $tottori = $color;}
+        if ($key=='島根県'){ $shimane = $color;}
+        if ($key=='香川県'){ $kagawa = $color;}
+        if ($key=='徳島県'){ $tokushima = $color;}
+        if ($key=='愛媛県'){ $ehime = $color;}
+        if ($key=='高知県'){ $kochi = $color;}
+        if ($key=='福岡県'){ $fukuoka = $color;}
+        if ($key=='大分県'){ $oita = $color;}
+        if ($key=='宮崎県'){ $miyazaki = $color;}
+        if ($key=='鹿児島県'){$kagoshima = $color;}
+        if ($key=='熊本県'){ $kumamoto = $color;}
+        if ($key=='佐賀県'){ $saga = $color;}
+        if ($key=='長崎県'){ $nagasaki = $color;}
+        if ($key=='沖縄県'){ $okinawa = $color;}
+    break;
 
-      case 2:
-      case 3:
+    case 2:
+    case 3:
         $color = ' #E8AC51';
         if ($key=='北海道'){ $hokkaido = $color;}
         if ($key=='青森県'){ $aomori = $color;}
@@ -171,58 +156,58 @@ foreach($cntPref as $key => $val){
         if ($key=='佐賀県'){ $saga = $color;}
         if ($key=='長崎県'){ $nagasaki = $color;}
         if ($key=='沖縄県'){ $okinawa = $color;}
-     break;
+    {} break;
 
-      case $val < 7:
-          $color = '#e7624a';
-          if ($key=='北海道'){ $hokkaido = $color;}
-          if ($key=='青森県'){ $aomori = $color;}
-          if ($key=='岩手県'){ $iwate = $color;}
-          if ($key=='秋田県'){ $akita = $color;}
-          if ($key=='宮城県'){ $miyagi = $color;}
-          if ($key=='山形県'){ $yamagata = $color;}
-          if ($key=='福島県'){ $fukushima = $color;}
-          if ($key=='新潟県'){ $niigata = $color;}
-          if ($key=='茨城県'){ $ibaraki = $color;}
-          if ($key=='栃木県'){ $tochigi = $color;}
-          if ($key=='群馬県'){ $gunma = $color;}
-          if ($key=='千葉県'){ $chiba = $color;}
-          if ($key=='埼玉県'){ $saitama = $color;}
-          if ($key=='東京都'){ $tokyo = $color;}
-          if ($key=='神奈川県'){$kanagawa = $color;}
-          if ($key=='山梨県'){ $yamanashi = $color;}
-          if ($key=='長野県'){ $nagano = $color;}
-          if ($key=='富山県'){ $toyama = $color;}
-          if ($key=='石川県'){ $ishikawa = $color;}
-          if ($key=='静岡県'){ $shizuoka = $color;}
-          if ($key=='愛知県'){ $aichi = $color;}
-          if ($key=='岐阜県'){ $gifu = $color;}
-          if ($key=='福井県'){ $fukui = $color;}
-          if ($key=='滋賀県'){ $shiga = $color;}
-          if ($key=='三重県'){ $mie = $color;}
-          if ($key=='和歌山県'){$wakayama = $color;}
-          if ($key=='奈良県'){ $nara = $color;}
-          if ($key=='京都府'){ $kyoto = $color;}
-          if ($key=='大阪府'){ $osaka = $color;}
-          if ($key=='兵庫県'){ $hyogo = $color;}
-          if ($key=='岡山県'){ $okayama = $color;}
-          if ($key=='広島県'){ $hiroshima = $color;}
-          if ($key=='山口県'){ $yamaguchi = $color;}
-          if ($key=='鳥取県'){ $tottori = $color;}
-          if ($key=='島根県'){ $shimane = $color;}
-          if ($key=='香川県'){ $kagawa = $color;}
-          if ($key=='徳島県'){ $tokushima = $color;}
-          if ($key=='愛媛県'){ $ehime = $color;}
-          if ($key=='高知県'){ $kochi = $color;}
-          if ($key=='福岡県'){ $fukuoka = $color;}
-          if ($key=='大分県'){ $oita = $color;}
-          if ($key=='宮崎県'){ $miyazaki = $color;}
-          if ($key=='鹿児島県'){$kagoshima = $color;}
-          if ($key=='熊本県'){ $kumamoto = $color;}
-          if ($key=='佐賀県'){ $saga = $color;}
-          if ($key=='長崎県'){ $nagasaki = $color;}
-          if ($key=='沖縄県'){ $okinawa = $color;}
-      break;
+    case $val < 7:
+        $color = '#e7624a';
+        if ($key=='北海道'){ $hokkaido = $color;}
+        if ($key=='青森県'){ $aomori = $color;}
+        if ($key=='岩手県'){ $iwate = $color;}
+        if ($key=='秋田県'){ $akita = $color;}
+        if ($key=='宮城県'){ $miyagi = $color;}
+        if ($key=='山形県'){ $yamagata = $color;}
+        if ($key=='福島県'){ $fukushima = $color;}
+        if ($key=='新潟県'){ $niigata = $color;}
+        if ($key=='茨城県'){ $ibaraki = $color;}
+        if ($key=='栃木県'){ $tochigi = $color;}
+        if ($key=='群馬県'){ $gunma = $color;}
+        if ($key=='千葉県'){ $chiba = $color;}
+        if ($key=='埼玉県'){ $saitama = $color;}
+        if ($key=='東京都'){ $tokyo = $color;}
+        if ($key=='神奈川県'){$kanagawa = $color;}
+        if ($key=='山梨県'){ $yamanashi = $color;}
+        if ($key=='長野県'){ $nagano = $color;}
+        if ($key=='富山県'){ $toyama = $color;}
+        if ($key=='石川県'){ $ishikawa = $color;}
+        if ($key=='静岡県'){ $shizuoka = $color;}
+        if ($key=='愛知県'){ $aichi = $color;}
+        if ($key=='岐阜県'){ $gifu = $color;}
+        if ($key=='福井県'){ $fukui = $color;}
+        if ($key=='滋賀県'){ $shiga = $color;}
+        if ($key=='三重県'){ $mie = $color;}
+        if ($key=='和歌山県'){$wakayama = $color;}
+        if ($key=='奈良県'){ $nara = $color;}
+        if ($key=='京都府'){ $kyoto = $color;}
+        if ($key=='大阪府'){ $osaka = $color;}
+        if ($key=='兵庫県'){ $hyogo = $color;}
+        if ($key=='岡山県'){ $okayama = $color;}
+        if ($key=='広島県'){ $hiroshima = $color;}
+        if ($key=='山口県'){ $yamaguchi = $color;}
+        if ($key=='鳥取県'){ $tottori = $color;}
+        if ($key=='島根県'){ $shimane = $color;}
+        if ($key=='香川県'){ $kagawa = $color;}
+        if ($key=='徳島県'){ $tokushima = $color;}
+        if ($key=='愛媛県'){ $ehime = $color;}
+        if ($key=='高知県'){ $kochi = $color;}
+        if ($key=='福岡県'){ $fukuoka = $color;}
+        if ($key=='大分県'){ $oita = $color;}
+        if ($key=='宮崎県'){ $miyazaki = $color;}
+        if ($key=='鹿児島県'){$kagoshima = $color;}
+        if ($key=='熊本県'){ $kumamoto = $color;}
+        if ($key=='佐賀県'){ $saga = $color;}
+        if ($key=='長崎県'){ $nagasaki = $color;}
+        if ($key=='沖縄県'){ $okinawa = $color;}
+    break;
 
     case  $val < 11:
         $color = '#eb87b6';
@@ -276,105 +261,105 @@ foreach($cntPref as $key => $val){
     break;
 
     case  $val < 15 :
-      $color = '#66b0f5';
-      if ($key=='北海道'){ $hokkaido = $color;}
-      if ($key=='青森県'){ $aomori = $color;}
-      if ($key=='岩手県'){ $iwate = $color;}
-      if ($key=='秋田県'){ $akita = $color;}
-      if ($key=='宮城県'){ $miyagi = $color;}
-      if ($key=='山形県'){ $yamagata = $color;}
-      if ($key=='福島県'){ $Fukushima = $color;}
-      if ($key=='新潟県'){ $niigata = $color;}
-      if ($key=='茨城県'){ $ibaraki = $color;}
-      if ($key=='栃木県'){ $tochigi = $color;}
-      if ($key=='群馬県'){ $gunma = $color;}
-      if ($key=='千葉県'){ $chiba = $color;}
-      if ($key=='埼玉県'){ $saitama = $color;}
-      if ($key=='東京都'){ $tokyo = $color;}
-      if ($key=='神奈川県'){$kanagawa = $color;}
-      if ($key=='山梨県'){ $yamanashi = $color;}
-      if ($key=='長野県'){ $nagano = $color;}
-      if ($key=='富山県'){ $toyama = $color;}
-      if ($key=='石川県'){ $ishikawa = $color;}
-      if ($key=='静岡県'){ $shizuoka = $color;}
-      if ($key=='愛知県'){ $aichi = $color;}
-      if ($key=='岐阜県'){ $gifu = $color;}
-      if ($key=='福井県'){ $fukui = $color;}
-      if ($key=='滋賀県'){ $shiga = $color;}
-      if ($key=='三重県'){ $mie = $color;}
-      if ($key=='和歌山県'){$wakayama = $color;}
-      if ($key=='奈良県'){ $nara = $color;}
-      if ($key=='京都府'){ $kyoto = $color;}
-      if ($key=='大阪府'){ $osaka = $color;}
-      if ($key=='兵庫県'){ $hyogo = $color;}
-      if ($key=='岡山県'){ $okayama = $color;}
-      if ($key=='広島県'){ $hiroshima = $color;}
-      if ($key=='山口県'){ $yamaguchi = $color;}
-      if ($key=='鳥取県'){ $tottori = $color;}
-      if ($key=='島根県'){ $shimane = $color;}
-      if ($key=='香川県'){ $kagawa = $color;}
-      if ($key=='徳島県'){ $tokushima = $color;}
-      if ($key=='愛媛県'){ $ehime = $color;}
-      if ($key=='高知県'){ $kochi = $color;}
-      if ($key=='福岡県'){ $fukuoka = $color;}
-      if ($key=='大分県'){ $oita = $color;}
-      if ($key=='宮崎県'){ $miyazaki = $color;}
-      if ($key=='鹿児島県'){$kagoshima = $color;}
-      if ($key=='熊本県'){ $kumamoto = $color;}
-      if ($key=='佐賀県'){ $saga = $color;}
-      if ($key=='長崎県'){ $nagasaki = $color;}
-      if ($key=='沖縄県'){ $okinawa = $color;}
+        $color = '#66b0f5';
+        if ($key=='北海道'){ $hokkaido = $color;}
+        if ($key=='青森県'){ $aomori = $color;}
+        if ($key=='岩手県'){ $iwate = $color;}
+        if ($key=='秋田県'){ $akita = $color;}
+        if ($key=='宮城県'){ $miyagi = $color;}
+        if ($key=='山形県'){ $yamagata = $color;}
+        if ($key=='福島県'){ $Fukushima = $color;}
+        if ($key=='新潟県'){ $niigata = $color;}
+        if ($key=='茨城県'){ $ibaraki = $color;}
+        if ($key=='栃木県'){ $tochigi = $color;}
+        if ($key=='群馬県'){ $gunma = $color;}
+        if ($key=='千葉県'){ $chiba = $color;}
+        if ($key=='埼玉県'){ $saitama = $color;}
+        if ($key=='東京都'){ $tokyo = $color;}
+        if ($key=='神奈川県'){$kanagawa = $color;}
+        if ($key=='山梨県'){ $yamanashi = $color;}
+        if ($key=='長野県'){ $nagano = $color;}
+        if ($key=='富山県'){ $toyama = $color;}
+        if ($key=='石川県'){ $ishikawa = $color;}
+        if ($key=='静岡県'){ $shizuoka = $color;}
+        if ($key=='愛知県'){ $aichi = $color;}
+        if ($key=='岐阜県'){ $gifu = $color;}
+        if ($key=='福井県'){ $fukui = $color;}
+        if ($key=='滋賀県'){ $shiga = $color;}
+        if ($key=='三重県'){ $mie = $color;}
+        if ($key=='和歌山県'){$wakayama = $color;}
+        if ($key=='奈良県'){ $nara = $color;}
+        if ($key=='京都府'){ $kyoto = $color;}
+        if ($key=='大阪府'){ $osaka = $color;}
+        if ($key=='兵庫県'){ $hyogo = $color;}
+        if ($key=='岡山県'){ $okayama = $color;}
+        if ($key=='広島県'){ $hiroshima = $color;}
+        if ($key=='山口県'){ $yamaguchi = $color;}
+        if ($key=='鳥取県'){ $tottori = $color;}
+        if ($key=='島根県'){ $shimane = $color;}
+        if ($key=='香川県'){ $kagawa = $color;}
+        if ($key=='徳島県'){ $tokushima = $color;}
+        if ($key=='愛媛県'){ $ehime = $color;}
+        if ($key=='高知県'){ $kochi = $color;}
+        if ($key=='福岡県'){ $fukuoka = $color;}
+        if ($key=='大分県'){ $oita = $color;}
+        if ($key=='宮崎県'){ $miyazaki = $color;}
+        if ($key=='鹿児島県'){$kagoshima = $color;}
+        if ($key=='熊本県'){ $kumamoto = $color;}
+        if ($key=='佐賀県'){ $saga = $color;}
+        if ($key=='長崎県'){ $nagasaki = $color;}
+        if ($key=='沖縄県'){ $okinawa = $color;}
     break;
 
     case  $val >= 15 :
-      $color = '#9c67e2';
-      if ($key=='北海道'){ $hokkaido = $color;}
-      if ($key=='青森県'){ $aomori = $color;}
-      if ($key=='岩手県'){ $iwate = $color;}
-      if ($key=='秋田県'){ $akita = $color;}
-      if ($key=='宮城県'){ $miyagi = $color;}
-      if ($key=='山形県'){ $yamagata = $color;}
-      if ($key=='福島県'){ $fukushima = $color;}
-      if ($key=='新潟県'){ $niigata = $color;}
-      if ($key=='茨城県'){ $ibaraki = $color;}
-      if ($key=='栃木県'){ $tochigi = $color;}
-      if ($key=='群馬県'){ $gunma = $color;}
-      if ($key=='千葉県'){ $chiba = $color;}
-      if ($key=='埼玉県'){ $saitama = $color;}
-      if ($key=='東京都'){ $tokyo = $color;}
-      if ($key=='神奈川県'){$kanagawa = $color;}
-      if ($key=='山梨県'){ $yamanashi = $color;}
-      if ($key=='長野県'){ $nagano = $color;}
-      if ($key=='富山県'){ $toyama = $color;}
-      if ($key=='石川県'){ $ishikawa = $color;}
-      if ($key=='静岡県'){ $shizuoka = $color;}
-      if ($key=='愛知県'){ $aichi = $color;}
-      if ($key=='岐阜県'){ $gifu = $color;}
-      if ($key=='福井県'){ $fukui = $color;}
-      if ($key=='滋賀県'){ $shiga = $color;}
-      if ($key=='三重県'){ $mie = $color;}
-      if ($key=='和歌山県'){$wakayama = $color;}
-      if ($key=='奈良県'){ $nara = $color;}
-      if ($key=='京都府'){ $kyoto = $color;}
-      if ($key=='大阪府'){ $osaka = $color;}
-      if ($key=='兵庫県'){ $hyogo = $color;}
-      if ($key=='岡山県'){ $okayama = $color;}
-      if ($key=='広島県'){ $hiroshima = $color;}
-      if ($key=='山口県'){ $yamaguchi = $color;}
-      if ($key=='鳥取県'){ $tottori = $color;}
-      if ($key=='島根県'){ $shimane = $color;}
-      if ($key=='香川県'){ $kagawa = $color;}
-      if ($key=='徳島県'){ $tokushima = $color;}
-      if ($key=='愛媛県'){ $ehime = $color;}
-      if ($key=='高知県'){ $kochi = $color;}
-      if ($key=='福岡県'){ $fukuoka = $color;}
-      if ($key=='大分県'){ $oita = $color;}
-      if ($key=='宮崎県'){ $miyazaki = $color;}
-      if ($key=='鹿児島県'){$kagoshima = $color;}
-      if ($key=='熊本県'){ $kumamoto = $color;}
-      if ($key=='佐賀県'){ $saga = $color;}
-      if ($key=='長崎県'){ $nagasaki = $color;}
-      if ($key=='沖縄県'){ $okinawa = $color;}
+        $color = '#9c67e2';
+        if ($key=='北海道'){ $hokkaido = $color;}
+        if ($key=='青森県'){ $aomori = $color;}
+        if ($key=='岩手県'){ $iwate = $color;}
+        if ($key=='秋田県'){ $akita = $color;}
+        if ($key=='宮城県'){ $miyagi = $color;}
+        if ($key=='山形県'){ $yamagata = $color;}
+        if ($key=='福島県'){ $fukushima = $color;}
+        if ($key=='新潟県'){ $niigata = $color;}
+        if ($key=='茨城県'){ $ibaraki = $color;}
+        if ($key=='栃木県'){ $tochigi = $color;}
+        if ($key=='群馬県'){ $gunma = $color;}
+        if ($key=='千葉県'){ $chiba = $color;}
+        if ($key=='埼玉県'){ $saitama = $color;}
+        if ($key=='東京都'){ $tokyo = $color;}
+        if ($key=='神奈川県'){$kanagawa = $color;}
+        if ($key=='山梨県'){ $yamanashi = $color;}
+        if ($key=='長野県'){ $nagano = $color;}
+        if ($key=='富山県'){ $toyama = $color;}
+        if ($key=='石川県'){ $ishikawa = $color;}
+        if ($key=='静岡県'){ $shizuoka = $color;}
+        if ($key=='愛知県'){ $aichi = $color;}
+        if ($key=='岐阜県'){ $gifu = $color;}
+        if ($key=='福井県'){ $fukui = $color;}
+        if ($key=='滋賀県'){ $shiga = $color;}
+        if ($key=='三重県'){ $mie = $color;}
+        if ($key=='和歌山県'){$wakayama = $color;}
+        if ($key=='奈良県'){ $nara = $color;}
+        if ($key=='京都府'){ $kyoto = $color;}
+        if ($key=='大阪府'){ $osaka = $color;}
+        if ($key=='兵庫県'){ $hyogo = $color;}
+        if ($key=='岡山県'){ $okayama = $color;}
+        if ($key=='広島県'){ $hiroshima = $color;}
+        if ($key=='山口県'){ $yamaguchi = $color;}
+        if ($key=='鳥取県'){ $tottori = $color;}
+        if ($key=='島根県'){ $shimane = $color;}
+        if ($key=='香川県'){ $kagawa = $color;}
+        if ($key=='徳島県'){ $tokushima = $color;}
+        if ($key=='愛媛県'){ $ehime = $color;}
+        if ($key=='高知県'){ $kochi = $color;}
+        if ($key=='福岡県'){ $fukuoka = $color;}
+        if ($key=='大分県'){ $oita = $color;}
+        if ($key=='宮崎県'){ $miyazaki = $color;}
+        if ($key=='鹿児島県'){$kagoshima = $color;}
+        if ($key=='熊本県'){ $kumamoto = $color;}
+        if ($key=='佐賀県'){ $saga = $color;}
+        if ($key=='長崎県'){ $nagasaki = $color;}
+        if ($key=='沖縄県'){ $okinawa = $color;}
     break;
 
     default;
@@ -427,9 +412,11 @@ foreach($cntPref as $key => $val){
         if ($key=='長崎県'){ $nagasaki = $color;}
         if ($key=='沖縄県'){ $okinawa = $color;}
     break;
-  }
-  
+    }
+
 }
+
+
 
 ?>
 
@@ -606,20 +593,20 @@ foreach($cntPref as $key => $val){
         <div class = "article">
             <h2>みんなの投稿</h2>
             <?php foreach($filterData as $column): ?>
-      <table>
-        <td class ="title"><a href ="detail.php?id_article=<?php echo $column['id_article']; ?>">
-        <?php echo h($column['title']); ?></a></td>
-        <div class ="prefecture"><?php echo h($column['prefecture']); ?></div>
-        <td class ="detail"><?php echo textLimit($column['content']); ?></td>
-        <td class ="name"></td>
-        <td class ="post-at"><?php echo h($column['name']);?><?php echo h($column['post_at']);?>
-        <!-- <td><img src="<?php echo $imageURL.($column['image']); ?>" alt="" ></td> -->
-      </table>
-    <?php endforeach; ?>
+                <table>
+                    <td class ="title"><a href ="detail.php?id_article=<?php echo $column['id_article']; ?>">
+                    <?php echo h($column['title']); ?></a></td>
+                    <div class ="prefecture"><?php echo h($column['prefecture']); ?></div>
+                    <td class ="detail"><?php echo textLimit($column['content']); ?></td>
+                    <td class ="name"></td>
+                    <td class ="post-at"><?php echo h($column['name']);?><?php echo h($column['post_at']);?>
+                    <!-- <td><img src="<?php echo $imageURL.($column['image']); ?>" alt="" ></td> -->
+                </table>
+            <?php endforeach; ?>
             <div>
-            <?php $art->paging2($max_page, $page); ?>
+                <?php $art->paging2($max_page, $page); ?>
             </div>
-      </div>
+        </div>
     </div>
 </div>
 
@@ -633,9 +620,5 @@ foreach($cntPref as $key => $val){
     </div>
 </footer> 
 
-  <!-- javascript
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-    </script> -->
-  </body>
+</body>
 </html>

@@ -7,21 +7,11 @@ require_once '../classes/article_class.php';
 require_once '../config/dbconnect.php';
 
 
-//ログインしているか判定し、セッションが切れていたらログインし直してもらう
-// $login = new LoginClass('member');
-// $result = $login->checkLogin();
-// if(!$result){
-//     exit('セッションが切れましたのでログインし直して下さい。');
-// }
-
-
 $del_image = $_POST['deleteImage'];
-//元画像
-$file_dir = '/Applications/MAMP/htdocs/post_travel/images/';
-$deleteImage = $file_dir.$del_image; 
-//リサイズ後の画像
-$refile_dir = '/Applications/MAMP/htdocs/post_travel/public/imageResize/';
-$deleteReImage = $refile_dir.'new'.$del_image;
+$file_dir = '/home/xs115618/oiwa1105.com/public_html/post_travel/images/';
+$deleteImage = $file_dir.$del_image; //元画像
+$refile_dir = '/home/xs115618/oiwa1105.com/public_html/post_travel/public/imageResize/';
+$deleteReImage = $refile_dir.'new'.$del_image; //リサイズ後の画像
 
 //DBに保存されている画像を削除する
 $del = new Article('article');
