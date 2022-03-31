@@ -2,10 +2,16 @@
 ini_set( 'display_errors', 1 );
 ini_set( 'error_reporting', E_ALL );
 
-require_once '/Applications/MAMP/htdocs/post_travel/config/dbconnect.php';
+require_once '/home/xs115618/oiwa1105.com/public_html/post_travel/config/dbconnect.php';
+
 
 Class Article extends Dbc{
-    //新規投稿をDBに追加
+    
+    /**
+    * 新規の投稿をDBに追加する（画像なしver）
+    * @param $article フォームから入力されたデータ
+    * @return bool $result 投稿の保存成功でtrue
+    */
     public function newpost($article){
         $sql = 'INSERT INTO 
                     article(id_member,title,prefecture,content,post_status)
@@ -22,14 +28,20 @@ Class Article extends Dbc{
             $stmt->bindValue(':post_status',$article['post_status'],PDO::PARAM_INT);
             $result = $stmt->execute();
             $dbh->commit();
+            header('Location:../mypage.php');
             return $result;
         }catch(PDOException $e){
             $dbh->rollBack();
             echo '接続失敗'.$e->getMessage();
-}
+        }
     }
 
-    //編集内容をDB更新
+
+    /**
+     * 投稿の編集内容をDBに更新する → マイページへリダイレクト
+     * @param $article フォームから入力されたデータ
+     * @return void
+     */
     public function updatePost($article){
         $sql = 'UPDATE article 
                     SET title = :title,prefecture =:prefecture,content = :content,post_status = :post_status
@@ -45,16 +57,19 @@ Class Article extends Dbc{
             $stmt->bindValue(':id_article',$article['id_article'],PDO::PARAM_INT);
             $stmt->execute();
             $dbh->commit();
-            echo '更新完了';
+            header('Location:../mypage.php');
         }catch(PDOException $e){
             $dbh->rollBack();
             echo '接続失敗'.$e->getMessage();
         }
     }
-    
 
 
-    //記事内容のバリデーション
+    /**
+     * 投稿の編集内容をDBに更新する → マイページへリダイレクト
+     * @param $article フォームから入力されたデータ
+     * @return void
+     */
     public function articleValidate($article){
         if(empty($article['title'])){
             exit('タイトルを入力して');
@@ -69,65 +84,67 @@ Class Article extends Dbc{
     }
 
 
-
-
-
-    //画像のバリデーション。ファイルを一時ファイルから指定ファイルへ移動しDBに記事保存
+    /**画像のバリデーション→アップロードされた画像データを一時ファイルから指定ファイルへ移動し、DBに記事保存。
+     * （画像がありver）
+     * @param $article フォームから入力されたデータ
+     * @param $image フォームからアップロードされた画像ファイル
+     * @return array $err_msg エラーメッセージ 
+     */
     public function imageValidate($article,$image){
 
-        $res = false;
-
-        $filename = basename($image['name']);
-        $tmp_path = $image['tmp_name'];
-        $file_err = $image['error'];
-        $filesize = $image['size'];
-        $upload_dir = '/Applications/MAMP/htdocs/post_travel/images/';
-        $save_filename = date('Ymdhis') . $filename;
+        $filename = basename($image['name']); //ファイル名
+        $tmp_path = $image['tmp_name']; //一時保存されるファイルパス
+        $file_err = $image['error']; //エラーコード
+        $filesize = $image['size']; //ファイルのバイト数
+        $upload_dir = '/home/xs115618/oiwa1105.com/public_html/post_travel/images/';
+        $save_filename = date('Ymdhis') . $filename; //ファイル名に頭に日付をつけて保存
         $err_msg = array();
-        $save_path = $upload_dir.$filename;
+        $save_path = $upload_dir.$filename; //ファイルの保存先パス
+
 
         //ファイルのバリデーション
         //ファイルサイズは1MB未満か確認
         if ($filesize > 1048576 || $file_err == 2) {
-            array_push($err_msg, 'ファイルサイズを1MB未満にして下さい。');
+            array_push($err_msg, '投稿できるファイルサイズは1MB未満です。');
         }
-        //拡張は画像形式化
-        //許可する拡張子を指定
+        //保存を許可する拡張子を指定し、画像の拡張子が許可されているかチェック
         $allow_ext = array('jpg', 'jpeg');
-        //ファイルの拡張子を取得
-        $file_ext = pathinfo($filename, PATHINFO_EXTENSION);
+        $file_ext = pathinfo($filename, PATHINFO_EXTENSION); //ファイルの拡張子を取得
         //配列の中にあったらtrueを返すin_array  NGならメッセージを出したいので！in_array
         if (!in_array(strtolower($file_ext), $allow_ext)) {
             array_push($err_msg, 'jpeg形式の画像ファイルを添付して下さい');
         }
         
+        //エラーメッセージがなければ画像を保存する
         if (count($err_msg) === 0) {
-            //ファイルはあるかどうか あれば一時ファイルから指定のディレクトリに移動
+            //ファイルはあるかどうかチェック。あれば一時ファイルから保存先に移動
             if (is_uploaded_file($tmp_path)) {
                 if(move_uploaded_file($tmp_path,$upload_dir.$save_filename)){
-                    $this->fileSave($article,$save_filename);
-                    $this->imageResize2($save_filename,$file_ext);
+                    $this->fileSave($article,$save_filename); //DBに画像と記事を保存
+                    $this->imageResize($save_filename,$file_ext); //画像をリサイズして保存
+                    header('Location:../mypage.php');
                 }else{
-                    array_push($err_msg, 'ファイルが保存されませんでした');
+                    array_push($err_msg, 'ファイルが保存されませんでした.再度やり直して下さい。');
                 }
             } else {
-                array_push($err_msg, 'ファイルが選択されていません');
+                array_push($err_msg, 'ファイルが選択されていません。もう一度やり直して下さい。');
             }
         } else {
-            foreach ($err_msg as $msg) {
-                echo $msg;
-                echo '<br>';
-            }
+            return $err_msg;
         }
     }
 
+
     /**
-   * 画像を記事内容をDBに保存
-   * @param $filename
-   * @return bool $result
+   * 画像と記事をDBに保存
+   * @param $article フォームから入力された投稿
+   * @param $save_filename 保存したファイル名
+   * @return bool $result 投稿の保存成功でtrue
    */
     public function fileSave($article,$save_filename){
-    $result = false;
+
+        $result = false;
+        
         $sql = 'INSERT INTO 
                     article(id_member,title,prefecture,image,content,post_status)
                 VALUE
@@ -144,7 +161,6 @@ Class Article extends Dbc{
             $stmt->bindValue(':post_status',$article['post_status'],PDO::PARAM_INT);
             $result = $stmt->execute();
             $dbh->commit();
-            // echo '投稿完了';
             return $result;
         }catch(PDOException $e){
             $dbh->rollBack();
@@ -154,14 +170,19 @@ Class Article extends Dbc{
 
 
     //画像のバリデーション。ファイルを一時ファイルから指定ファイルへ移動しDBに記事更新
+    /**画像のバリデーション→アップロードされた画像データを一時ファイルから指定ファイルへ移動し、DBに記事更新。
+     * （画像がありver）
+     * @param $article フォームから入力されたデータ
+     * @param $image フォームからアップロードされた画像ファイル
+     * @return array $err_msg エラーメッセージ 
+     */
     public function imageUpdate($article,$image){
-        $res = false;
 
         $filename = basename($image['name']);
         $tmp_path = $image['tmp_name'];
         $file_err = $image['error'];
         $filesize = $image['size'];
-        $upload_dir = '/Applications/MAMP/htdocs/post_travel/images/';
+        $upload_dir = '/home/xs115618/oiwa1105.com/public_html/post_travel/images/';
         $save_filename = date('Ymdhis') . $filename;
         $err_msg = array();
         $save_path = $upload_dir.$filename;
@@ -171,23 +192,23 @@ Class Article extends Dbc{
         if ($filesize > 1048576 || $file_err == 2) {
             array_push($err_msg, 'ファイルサイズを1MB未満にして下さい。');
         }
-        //拡張は画像形式化
-        //許可する拡張子を指定
+
+        //保存を許可する拡張子を指定し、画像の拡張子が許可されているかチェック
         $allow_ext = array('jpg', 'jpeg');
-        //ファイルの拡張子を取得
-        $file_ext = pathinfo($filename, PATHINFO_EXTENSION);
+        $file_ext = pathinfo($filename, PATHINFO_EXTENSION); //ファイルの拡張子を取得
         //配列の中にあったらtrueを返すin_array  NGならメッセージを出したいので！in_array
         if (!in_array(strtolower($file_ext), $allow_ext)) {
             array_push($err_msg, 'jpeg形式の画像ファイルを添付して下さい');
         }
-        
+
+        //エラーメッセージがなければ画像を保存する
         if (count($err_msg) === 0) {
-            //ファイルはあるかどうか あれば一時ファイルから指定のディレクトリに移動
-            //リサイズしたものも保存する
+            //ファイルはあるかどうかチェック。あれば一時ファイルから保存先に移動
             if (is_uploaded_file($tmp_path)) {
                 if(move_uploaded_file($tmp_path,$upload_dir.$save_filename)){
-                    $this->fileUpdate($article,$save_filename);
-                    $this->imageResize2($save_filename,$file_ext);
+                    $this->fileUpdate($article,$save_filename);  //DBの画像と記事を更新
+                    $this->imageResize($save_filename,$file_ext); //画像リサイズして保存
+                    header('Location:../mypage.php');
                 }else{
                     array_push($err_msg, 'ファイルが保存されませんでした');
                 }
@@ -204,9 +225,10 @@ Class Article extends Dbc{
 
 
     /**
-   * 画像と記事を内容をDBに更新
-   * @param $filename
-   * @return bool $result
+   * DBの画像と記事内容を更新
+   * @param $article フォームから入力された投稿
+   * @param $save_filename フォームからアップロードされた画像ファイル
+   * @return void
    */
         //編集内容をDB更新
         public function fileUpdate($article,$save_filename){
@@ -225,61 +247,27 @@ Class Article extends Dbc{
                 $stmt->bindValue(':id_article',$article['id_article'],PDO::PARAM_INT);
                 $stmt->execute();
                 $dbh->commit();
-                echo '更新完了';
             }catch(PDOException $e){
                 $dbh->rollBack();
                 echo '接続失敗'.$e->getMessage();
             }
         }
 
-            /**
-         * 画像をリサイズして保存する
-         * @param $filename
-         * @return bool $result
-         */
-        function imageResize($save_filename,$file_ext){
-            $path = '/Applications/MAMP/htdocs/post_travel/images/';
-            $image_before =  $path.$save_filename;
-            $new = 'new';
-            
-            // 元の画像名を指定してサイズを取得
-            list($width, $height) = getimagesize($image_before);
 
-            $newwidth = 0; // 新しい横幅
-            $newheight = 0; // 新しい縦幅
-            $w = 300; // 最大横幅
-            $h = 300; // 最大縦幅
-
-            $zoom1 = $width / $w;
-            $zoom2 = $height / $h;
-            $zoom = ($zoom1 > $zoom2) ? $zoom1 : $zoom2;
-            $newwidth  = floor($width  / $zoom);
-            $newheight = floor($height / $zoom);
-
-            // 元の画像から新しい画像を作る準備
-            // if( $file_ext == IMAGETYPE_JPEG ) {
-                $baseImage = imagecreatefromjpeg($image_before);
-                // return $baseImage;
-                // }
-            // サイズを指定して新しい画像のキャンバスを作成
-            $image = imagecreatetruecolor($newwidth, $newheight); 
-            // 画像のコピーと伸縮
-            imagecopyresampled($image, $baseImage, 0, 0, 0, 0, $newwidth, $newheight, $width, $height);
-            // コピーした画像を出力する
-            imagejpeg($image,$new.$save_filename);
-        }
-    
-
-
-    function imageResize2($save_filename,$file_ext){
-        $path = '/Applications/MAMP/htdocs/post_travel/images/';
-        $image_before =  $path.$save_filename;
+    /**
+     * 画像をリサイズして保存する
+     * @param $save_filename DBに保存したファイル名
+     * @return void
+     */
+    function imageResize($save_filename){
+        $path = '/home/xs115618/oiwa1105.com/public_html/post_travel/images/';
+        $image_before =  $path.$save_filename; //リサイズ前の画像
         $new = 'new';
         
         // 元の画像名を指定してサイズを取得
         list($width, $height) = getimagesize($image_before);
 
-        //最大幅に縮小拡大
+        //最大幅に縮小拡大 (縦か横大きい方に合わせて縮小)
         $newwidth = 0; // 新しい横幅
         $newheight = 0; // 新しい縦幅
         $dst_w = 300; // 最大横幅 (コピー先の横幅)
@@ -294,10 +282,12 @@ Class Article extends Dbc{
         // サイズを指定して新しい画像のキャンバスを作成
         $image = imagecreatetruecolor($dst_w, $dst_h); 
 
+        //縮小した画像の小さい幅の方を拡大、大きい方は拡大した分をカットすることで300×300にする。
         $cutwidth = 0;
         $cutheight = 0;
         $rewidth = 300;
         $reheight = 300;
+
         // サイズを切り取り 300×300にする
         if($newwidth>$newheight){
             $zm = $height / $dst_h;
@@ -310,10 +300,7 @@ Class Article extends Dbc{
         }
 
         // 元の画像から新しい画像を作る準備
-        // if( $file_ext == IMAGETYPE_JPEG ) {
-            $baseImage= imagecreatefromjpeg($image_before);
-            // return $baseImage;
-            // }
+        $baseImage= imagecreatefromjpeg($image_before);
         // 画像のコピーと伸縮
         imagecopyresampled($image, $baseImage, $cutwidth, $cutheight, 0, 0, $rewidth, $reheight, $width, $height);
         // コピーした画像を出力する
@@ -321,22 +308,3 @@ Class Article extends Dbc{
     }
 }
         
-//エラーでページを戻して反映させる仕様
-// $err = [];
-
-// if(!$title = filter_input(INPUT_POST,'title')){
-//     $err[] = 'タイトルを入力して下さい。';
-// }
-// if(!$content = filter_input(INPUT_POST,'content')){
-//     $err[] = '本文を入力して下さい。';
-// }
-
-// //エラーがなかったときの処理
-// if(count($err) === 0){
-
-// }
-// //エラーがあった場合
-// if(count($err) < 0){
-//     header('Location:form.php');
-//     return;
-// }

@@ -2,7 +2,7 @@
 
 <?php
 require_once 'env.php';
-require_once '/Applications/MAMP/htdocs/post_travel/functions/functions.php';
+require_once '/home/xs115618/oiwa1105.com/public_html/post_travel/functions/functions.php';
 
 //DB接続関連
 Class Dbc{
@@ -32,7 +32,7 @@ Class Dbc{
     return $dbh;
     }
 
-    // //全データ取得（公開になっているもののみ） 
+    // //全データ取得
     // public function getAll(){
     //     $dbh = $this->dbconnect();
     //     $sql = "SELECT * FROM $this->table_name 
@@ -44,7 +44,7 @@ Class Dbc{
     //     $dbh = null;
     // }
 
-    //全データ取得改
+    //全データ取得（公開になっているもののみ） 
     function getAll(){
         $dbh = $this->dbconnect();
         $sql = "SELECT *
@@ -56,6 +56,32 @@ Class Dbc{
         return $result;
         $dbh = null;
     }
+
+     /**
+     * 県別全メンバー記事取得（公開になっているもののみ） 
+     * @param string $pref_change
+     * @return array|bool $result|false あれば記事なければfalse
+     */
+    function getAllpref($pref_change){
+        try{
+        $dbh = $this->dbconnect();
+        $sql = "SELECT *
+                    FROM article INNER JOIN member 
+                    ON article.id_member = member.id_member
+                    WHERE post_status = 1
+                    AND prefecture = :prefecture
+                    ORDER BY id_article DESC ";
+        $stmt = $dbh->prepare($sql);
+        $stmt->bindValue(':prefecture',(string)$pref_change,PDO::PARAM_STR);
+        $stmt->execute();
+        $result = $stmt->fetchall(PDO::FETCH_ASSOC);
+        return $result;
+        $dbh = null;
+    }catch(\PDOException $e){
+        echo $e->getMessage();
+        return  false;   
+    }
+}
 
 
     /**
@@ -81,6 +107,32 @@ Class Dbc{
         return  false;   
         }
 }
+
+    /**
+     * id_memberから該当メンバーの県別記事を取得
+     * @param string $id_member $pref_change
+     * @return array|bool $result|false あれば記事なければfalse
+     */
+    public function getMemberPref($id_member,$pref_change){
+        try{
+        $dbh = $this->dbconnect();
+        $sql = "SELECT * FROM $this->table_name 
+                    WHERE id_member = :id_member
+                    AND prefecture = :prefecture
+                    ORDER BY id_article DESC ";
+        $stmt = $dbh->prepare($sql);
+        $stmt->bindValue(':id_member',(int)$id_member,PDO::PARAM_INT);
+        $stmt->bindValue(':prefecture',(string)$pref_change,PDO::PARAM_STR);
+        $stmt->execute();
+        $result = $stmt->fetchall(PDO::FETCH_ASSOC);
+        return $result;
+        $dbh = null;
+        }catch(\PDOException $e){
+        echo $e->getMessage();
+        return  false;   
+        }
+}
+
 
     /**
      * 写真を取得
@@ -132,7 +184,7 @@ function getPicture(){
         $stmt = $dbh->prepare($sql);
         $stmt->bindValue(':id_article',(int)$id_article,PDO::PARAM_INT);
         $stmt->execute();
-        echo '削除しました';
+        header('Location:./mypage.php');
         }
 
 
@@ -140,7 +192,7 @@ function getPicture(){
     public function deleteImage($del_image){
         $result = false;
         if(empty($del_image)){
-            exit('画像がありません。');
+            header('Location:mypage.php');
         }
         $dbh = $this->dbconnect();
         $sql = "UPDATE $this->table_name SET image = NULL 
@@ -152,19 +204,21 @@ function getPicture(){
         // echo '画像削除しました';
     }
 
+
     /**
- * ページ番号リンクの表示
- * @param int $max_page データの最大件数
- * @param int $page 現在のページ番号
- * @param int $pageRange $pageから前後何件のページ番号を表示するか
- */
-    public function paging($max_page,$page=1,$pageRange =2){
+     * ページ番号リンクの表示
+     * @param int $max_page データの最大件数
+     * @param int $page 現在のページ番号
+     * @param int $pageRange $pageから前後何件のページ番号を表示するか
+     */
+    public function paging($max_page,$page=1,$pageRange=2){
         $page = h($page);
         $prev = max($page - 1, 1); // 前のページ番号は1と比較して大きい方を使う
         $next = min($page + 1, $max_page); // 次のページ番号は最大ページ数と比較して小さい方を使う
     
         $start = max($page - $pageRange, 2); //ページ番号の始点
         $end = min($page + $pageRange, $max_page - 1); // ページ番号の終点
+
         //1ページ目のときのページ番号の終点
         if($page === 1){
         $end = $pageRange * 2;
@@ -215,6 +269,8 @@ function getPicture(){
     //最後のページ番号へのリンク
     if ($page < $max_page) {
         echo '<a href="mypage.php?page='. $max_page .'" >' . $max_page . '</a>';
+    }elseif($page == 1 && $page == $max_page){
+        echo '<p></p>';    
     } else {
         echo '<span>' . $max_page . '</span>';
     }
@@ -292,13 +348,15 @@ function getPicture(){
     //最後のページ番号へのリンク
     if ($page < $max_page) {
         echo '<a href="allpost.php?page='. $max_page .'" >' . $max_page . '</a>';
+    }elseif($page == 1 && $page == $max_page){
+        echo '<p></p>';     
     } else {
         echo '<span>' . $max_page . '</span>';
     }
 
     //最後のページへのリンク
     if ($page < $max_page){
-        echo '<a href="allpost.php?page=' . $max_page . ' title="最後のページへ">&raquo;</a>';
+        echo '<a href="allpost.php?page=' . $max_page . ' title="最後のページへ">&raquo;</a>';   
     } else {
         echo '<span class="first_last_page">&raquo;</span>';
     }
@@ -361,6 +419,8 @@ echo '</div>';
 //最後のページ番号へのリンク
 if ($page < $max_page) {
     echo '<a href="pictures.php?page='. $max_page .'" >' . $max_page . '</a>';
+}elseif($page == 1 && $page == $max_page){
+    echo '<p></p>';       
 } else {
     echo '<span>' . $max_page . '</span>';
 }

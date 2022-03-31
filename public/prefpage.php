@@ -10,7 +10,7 @@ require_once '../classes/prefecture_class.php';
 
 
 
-//ログインしているか判定し、していなければ新規登録画面へ
+//ログインしているか判定し、していなければ新規登録画面へ ｓ
 $login = new LoginClass('member');
 $result = $login->checkLogin();
 if(!$result){
@@ -21,28 +21,6 @@ if(!$result){
 $login_user = $_SESSION['login_user'];
 $id_member = $login_user['id_member'];
 
-
-//記事IDから現在の記事の詳細をDBから取得
-$art = new Article('article');
-$result = $art->getById($_GET['id_article']);
-
-$id_article = $result['id_article'];
-$title = $result['title'];
-$prefecture = $result['prefecture'];
-$content= $result['content'];
-$post_status= (int)$result['post_status'];
-$image = $result['image'];
-
-//画像のパスを指定
-$imageURL ='/post_travel/public/imageResize/'.'new'.$image;
-$noImage ='/post_travel/japan.png';
-
-//画像がない場合は代わりの画像を表示
-if(isset($image)){
-    $currentImage = $imageURL;
-}else{
-    $currentImage = $noImage;
-}
 
 
 
@@ -100,13 +78,47 @@ foreach($getPref as $pref => $color){
         if ($pref == 'saga'){ $saga = $color;}
         if ($pref == 'nagasaki'){ $nagasaki = $color;}
         if ($pref == 'okinawa'){ $okinawa = $color;}
-
+        
     }
 }
 
+//DBに色を保存するために県名を＄_GETで受け取る
+//color-formクラスでprefchange.phpに色データを送信
+if(!empty($_GET['prefecture'])){
+    $pref_name = $_GET['prefecture']; 
+    
+}
+$pref_change = changePrefName($pref_name);
+
+//メンバー個々の県別記事を取得
+$art = new Article('article');
+$articleData = $art->getMemberPref($id_member,$pref_change);
+$imageURL = '/post_travel/images/';
+
+
+
+//ポストがなかった際にはページネーションは表示せず、記事はありませんと表示
+if(!empty($articleData)){
+    //ページネーションに必要で情報を取得
+    //メンバーのデータ総数から1ページあたり5件とし最大ページ数を取得
+    $dbh = $art->dbconnect();
+    $count_sql = "SELECT COUNT(*) as cnt FROM article WHERE id_member=:id_member AND prefecture = :prefecture";
+    $stmt = $dbh->prepare($count_sql);
+    $stmt->bindValue(':id_member',(int)$id_member,PDO::PARAM_INT);
+    $stmt->bindValue(':prefecture',(string)$pref_change,PDO::PARAM_STR);
+    $stmt->execute();
+    $count = $stmt->fetch(PDO::FETCH_ASSOC);
+    $per_page = 5; //1ページあたりの件数
+    $max_page = ceil($count['cnt'] / $per_page);
+    //現在表示しているページ番号を取得
+    $page = empty($_GET['page']) ? 1 : (int) $_GET['page'];
+    //ぺージ番号を渡してデータ配列にフィルターをかける
+    $filterData = $art->filter($page, $per_page, $articleData);
+}else{
+    $filterData = '記事が投稿されていません。';
+}
 
 ?>
-
 
 <!DOCTYPE HTML PUBLIC"=//W3C//DTD HTML 4.01 Transitional//EN>
 <html>
@@ -123,10 +135,8 @@ foreach($getPref as $pref => $color){
         <link href="https://fonts.googleapis.com/css2?family=Kaisei+Decol:wght@700&family=Kiwi+Maru:wght@300&family=Klee+One&display=swap" rel="stylesheet">
         <!-- css -->
         <link href="s.css" rel="stylesheet">
-        <!-- javascript -->
-        <script type='text/javascript' src='//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js?ver=1.11.3'></script>
     </head>
-<body>
+<body>    
 <header>
     <div class ="header">      
         <div class ="header-left">
@@ -140,7 +150,7 @@ foreach($getPref as $pref => $color){
                 <li><a href ="allpost.php">みんなの投稿</a> </li>
                 <li><a href ="pictures.php">写真の投稿</a> </li>
             </ol>
-        </nav>
+        </nav>  
         <div class ="header-right">
             <div class="user-info">
                 <p>ログインユーザ:<?php echo h($login_user['name'])?></p>
@@ -153,15 +163,21 @@ foreach($getPref as $pref => $color){
                 </form>
             </div>
         </div>
-    </div>  
-</header>
+    </div>
+</header> 
 
-
-
-<div class ="main-content" >
-    <div class = "map">
+<div class ="content" >
+    <div class = "map"> 
+    <div class="hidden-box">
+                <label for ="label1"><i class="fa-solid fa-circle-question hint-btn"></i></label>
+                <input type="checkbox" id="label1" />
+                <div class="hidden-show">
+                    <p>県をクリックすることで、県別の記事が見れます！</p>
+                    <p>県別の記事ページで色をつけることができます。</p>
+                </div>    
+            </div>    
         <div class ="japan">
-        <style>
+            <style>
             #hokkaido  { fill:<?php echo $hokkaido?>  } #hokkaido:hover  { fill:#39A869;}
             #aomori    { fill:<?php echo $aomori?>    } #aomori:hover    { fill:#39A869;}   
             #iwate     { fill:<?php echo $iwate?>     } #iwate:hover     { fill:#39A869;}
@@ -259,99 +275,115 @@ foreach($getPref as $pref => $color){
                 <g><a xlink:href="./prefpage.php?prefecture=saga"><title>佐賀県</title><path class="cls-1" id ="saga" data-name ="saga" d="M93.6,682.5l-9.6.9,1.1,8.3-13.9,1.9L68,669.9l5.9-10.8,10.3,3.7,16.5,5.5Z" transform="translate(-27.4 -2.1)"/></a></g>
                 <g><a xlink:href="./prefpage.php?prefecture=nagasaki"><title>長崎県</title><path class="cls-1" id ="nagasaki" data-name ="nagasaki" d="M85.1,691.8l7.3,9.3-2.1,8.1-7.7,1.3-1.4-10.3-9.7,5.3-6.3-20.7-9.1-11,4.2-5.3L68,670l8.4,17.4Z" transform="translate(-27.4 -2.1)"/></a></g>
                 <g><a xlink:href="./prefpage.php?prefecture=okinawa"><title>沖縄県</title><path class="cls-1" id ="okinawa" data-name ="okinawa" d="M61.3,806.3l-11.2,9L39.8,812l-3.1,5.4,3.5,6-7.8,6.3L27.9,848l10.6-.3,5.3-17.1,22.4-12.8Z" transform="translate(-27.4 -2.1)"/></a></g>
-            </svg> 
+            </svg>  
         </div>
     </div>
 
+    <div class ="container">
+        <div class = "pref-article">
+            <div class="already">
+            <h2>自分の投稿 &nbsp;-県別- &nbsp;&nbsp;<?php echo $pref_change;?>            
+                <div class="color-form">
+                    <form method="post" action ="./prefchange.php">
+                        <input type="hidden" name="pref_name" value="<?php echo $pref_name; ?>">
+                        <input type ="color" name="pref_color" class="clr-img" value="#b1e983">
+                        <input type ="submit" value ="この色にする" class="clr-btn">
+                    </form>
+                </div>
+            </h2>
+            <?php if(is_array($filterData)):?>
+                <?php foreach($filterData as $column): ?>
+                    <table>
+                    <td class ="title"><a href ="detail.php?id_article=<?php echo $column['id_article']; ?>">
+                        <?php echo h($column['title']); ?></a></td><div class ="prefecture"><?php echo h($column['prefecture']); ?></div>
+                        <td class ="detail"><?php echo textLimit($column['content']); ?></td>
+                        <td class ="post-at"><?php echo h($column['post_at']);?><a href ="update_form.php?id_article=<?php echo $column['id_article']; ?>"><i class="fa-solid fa-pen-to-square fa-deco"></i></a>
+                        <a href ="delete.php?id_article=<?php echo $column['id_article']; ?>"><i class="fa-regular fa-trash-can fa-deco"></i></a></td>
+                        <!-- <td><img src="<?php echo $imageURL.($column['image']); ?>" alt="" ></td> -->
+                    </table>
+                <?php endforeach; ?>
+                <div> 
+                    <?php 
+                    $page = 1; //初期ページ
+                    $pageRange = 2; //ページ前後の表示範囲
+                    $page = h($page); 
+                    $prev = max($page - 1, 1); // 前のページ番号は1と比較して大きい方を使う
+                    $next = min($page + 1, $max_page); // 次のページ番号は最大ページ数と比較して小さい方を使う
+                    $start = max($page - $pageRange, 2); //ページ番号の始点
+                    $end = min($page + $pageRange, $max_page - 1); // ページ番号の終点
+                    
+                    //1ページ目のときのページ番号の終点
+                    if($page === 1){$end = $pageRange * 2;}
+                    // ページ番号を$numsに格納する
+                    $nums =[];
+                    for ($i = $start; $i <= $end; $i++) {$nums[] = $i;}
+                    ?>
 
+                    <div class = "page">
+                    <!-- 2ページ目以降にいた場合、最初のページへ遷移するリンクをつける -->
+                    <?php if ($page > 1 && $page !== 1) : ?>
+                    <a href="prefpage.php?page=1&prefecture=<?php echo $pref_name ?>" title="最初のページへ">&laquo;</a>
+                    <?php else :?>
+                    <span class="first_last_page">&laquo;</span>
+                    <?php endif; ?>
+                    
+                    <!-- // 1ページ目へのリンク -->
+                    <a href="prefpage.php?page=1&prefecture=<?php echo $pref_name ?>">1</a>
+                    <div class ="dot">
+                    <?php if ($start > $pageRange) : ?>
+                    <!-- //ドット表示 -->
+                    <p>...</p>
+                    <?php endif; ?>
+                    </div>
+                    
+                    <!-- ページリンクをページ番号格納した$nums ループで表示 -->
+                    <?php foreach ($nums as $num) : ?>
+                        <!-- // 現在地のページ番号 -->
+                        <?php if ($num === $page) : ?>
+                        <span class="current"><?php echo $num ?></span>
+                        <?php  else : ?>
+                        <!-- // ページ番号リンク表示 -->
+                        <a href="prefpage.php?page=<?php echo $num ?>&prefecture=<?php echo $pref_name ?>"><?php echo $num ?></a>
+                        <?php endif ;?>
+                    <?php endforeach ;?>    
+                    
 
+                    <div class ="dot">
+                    <?php if (($max_page - 1) > $end) : ?> 
+                        <!-- //ドット表示 -->
+                        <p>...</p>
+                    <?php endif; ?>
+                    </div>
 
+                    <!-- //最後のページ番号へのリンク -->
+                    <?php if ($page < $max_page) : ?>
+                    <a href="prefpage.php?page=<?php echo $max_page?>&prefecture=<?php echo $pref_name ?>" ><?php echo $max_page?></a>
+                    <?php elseif($page == $max_page && $page == 1) : ?>
+                    <p></p>    
+                    <?php else : ?>
+                    <span><?php echo $max_page ?></span>
+                    <?php endif ; ?>
 
-    <div class="content-update">
-        <h2>投稿の更新</h2>
-        <div class="update-form">
-            <form action="./imageResize/update.php" method="POST" enctype="multipart/form-data">
-            <input type ="hidden" name ="id_article" value="<?php echo $id_article; ?>">
-            <img src="<?php echo $currentImage; ?>" alt="" class="current-img"/>
-            <p>タイトル<div class="err_text" id="err_textbox"></div></p>
-            <p><input type ="text" name="title" class="up-title" id="textbox" value="<?php echo $title; ?>"></p>
-            <p>県を選ぶ</p>
-                <!-- ドロップダウンリスト -->
-                <select name="prefecture" class="select-pref">
-                <option value="北海道" <?php if($prefecture === "北海道") echo "selected"; ?>>北海道</option>
-                <option value="青森県" <?php if($prefecture === "青森県") echo "selected"; ?>>青森県</option>
-                <option value="岩手県" <?php if($prefecture === "岩手県") echo "selected"; ?>>岩手県</option>
-                <option value="宮城県" <?php if($prefecture === "宮城県") echo "selected"; ?>>宮城県</option>';
-                <option value="秋田県" <?php if($prefecture === "秋田県") echo "selected"; ?>>秋田県</option>
-                <option value="山形県" <?php if($prefecture === "山形県") echo "selected"; ?>>山形県</option>
-                <option value="福島県" <?php if($prefecture === "福島県") echo "selected"; ?>>福島県</option>
-                <option value="茨城県" <?php if($prefecture === "茨城県") echo "selected"; ?>>茨城県</option>
-                <option value="栃木県" <?php if($prefecture === "栃木県") echo "selected"; ?>>栃木県</option>
-                <option value="群馬県" <?php if($prefecture === "群馬県") echo "selected"; ?>>群馬県</option>
-                <option value="埼玉県" <?php if($prefecture === "埼玉県") echo "selected"; ?>>埼玉県</option>
-                <option value="千葉県" <?php if($prefecture === "千葉県") echo "selected"; ?>>千葉県</option>
-                <option value="東京都" <?php if($prefecture === "東京県") echo "selected"; ?>>東京都</option>
-                <option value="神奈川県" <?php if($prefecture === "神奈川県") echo "selected"; ?>>神奈川県</option>
-                <option value="新潟県" <?php if($prefecture === "新潟県") echo "selected"; ?>>新潟県</option>
-                <option value="富山県" <?php if($prefecture === "富山県") echo "selected"; ?>>富山県</option>
-                <option value="石川県" <?php if($prefecture === "石川県") echo "selected"; ?>>石川県</option>
-                <option value="福井県" <?php if($prefecture === "福井県") echo "selected"; ?>>福井県</option>
-                <option value="山梨県" <?php if($prefecture === "山梨県") echo "selected"; ?>>山梨県</option>
-                <option value="長野県" <?php if($prefecture === "長野県") echo "selected"; ?>>長野県</option>
-                <option value="岐阜県" <?php if($prefecture === "岐阜県") echo "selected"; ?>>岐阜県</option>
-                <option value="静岡県" <?php if($prefecture === "静岡県") echo "selected"; ?>>静岡県</option>
-                <option value="愛知県" <?php if($prefecture === "愛知県") echo "selected"; ?>>愛知県</option>
-                <option value="三重県" <?php if($prefecture === "三重県") echo "selected"; ?>>三重県</option>
-                <option value="滋賀県" <?php if($prefecture === "滋賀県") echo "selected"; ?>>滋賀県</option>
-                <option value="京都府" <?php if($prefecture === "京都県") echo "selected"; ?>>京都府</option>
-                <option value="大阪府" <?php if($prefecture === "大阪県") echo "selected"; ?>>大阪府</option>
-                <option value="兵庫県" <?php if($prefecture === "兵庫県") echo "selected"; ?>>兵庫県</option>
-                <option value="奈良県" <?php if($prefecture === "奈良県") echo "selected"; ?>>奈良県</option>
-                <option value="和歌山県" <?php if($prefecture === "和歌山県") echo "selected"; ?>>和歌山県</option>
-                <option value="鳥取県" <?php if($prefecture === "鳥取県") echo "selected"; ?>>鳥取県</option>
-                <option value="島根県" <?php if($prefecture === "島根県") echo "selected"; ?>>島根県</option>
-                <option value="岡山県" <?php if($prefecture === "岡山県") echo "selected"; ?>>岡山県</option>
-                <option value="広島県" <?php if($prefecture === "広島県") echo "selected"; ?>>広島県</option>
-                <option value="山口県" <?php if($prefecture === "山口県") echo "selected"; ?>>山口県</option>
-                <option value="徳島県" <?php if($prefecture === "徳島県") echo "selected"; ?>>徳島県</option>
-                <option value="香川県" <?php if($prefecture === "香川県") echo "selected"; ?>>香川県</option>
-                <option value="愛媛県" <?php if($prefecture === "愛媛県") echo "selected"; ?>>愛媛県</option>
-                <option value="高知県" <?php if($prefecture === "高知県") echo "selected"; ?>>高知県</option>
-                <option value="福岡県" <?php if($prefecture === "福岡県") echo "selected"; ?>>福岡県</option>
-                <option value="佐賀県" <?php if($prefecture === "佐賀県") echo "selected"; ?>>佐賀県</option>
-                <option value="長崎県" <?php if($prefecture === "長崎県") echo "selected"; ?>>長崎県</option>
-                <option value="熊本県" <?php if($prefecture === "熊本県") echo "selected"; ?>>熊本県</option>
-                <option value="大分県" <?php if($prefecture === "大分県") echo "selected"; ?>>大分県</option>
-                <option value="宮崎県" <?php if($prefecture === "宮崎県") echo "selected"; ?>>宮崎県</option>
-                <option value="鹿児島県" <?php if($prefecture === "鹿児島県") echo "selected"; ?>>鹿児島県</option>
-                <option value="沖縄県" <?php if($prefecture === "沖縄県") echo "selected"; ?>>沖縄県</option>
-                </select>
-            <p>本文<div class="err_text" id="err_textarea"></div></p>
-            <p><textarea name="content"  cols=90" rows="8" class="blog-text" id="textarea"><?php echo $content; ?></textarea></p>
-            <!-- <input type="hidden" name="MAX_FILE_SIZE" value="1048576"> -->
-            <p><input name="image" type="file" accept="image/*"></p>
-            <p><input type="radio" name="post_status" value="1"
-            <?php if($post_status === 1) echo "checked";?>>公開
-            <input type="radio" name="post_status" value="2"
-            <?php if($post_status === 2) echo "checked";?>>非公開
-            <input type="hidden" name="deleteImage" value="<?php echo $image; ?>">
-
-            <input type="submit" value="この内容で更新する" class="post-button"></p>
-        </form>
+                    <!-- //最後のページへのリンク -->
+                    <?php if ($page < $max_page) : ?>
+                    <a href="prefpage.php?page=<?php echo $max_page?>&prefecture=<?php echo $pref_name ?>" title="最後のページへ">&raquo;</a>
+                    <?php else : ?>
+                    <span class="first_last_page">&raquo;</span>
+                    <?php endif ; ?>
+                    </div>
+                </div>
+            <?php else :?>
+            </div>  
+                <div class ="notYet">
+                <p><?php echo $filterData;?> </p>
+                <p></p><a href ="./form.php" class="newpost-btn">新規投稿をする</a></p>
+            <?php endif; ?>
         </div>
-        <div class="del-image">
-        <form method ="POST" action ="deleteImage.php">   
-            <input type ="hidden" name ="id_article" value="<?php echo $id_article; ?>">
-            <input type="hidden" name="deleteImage" value="<?php echo $image; ?>">
-            <input type ="submit" name ="delete" value ="画像のみ削除する" class="del-img-btn">
-        </form>
-        </div>
-    </div>  
+    </div>
 </div>
-    
 
 <footer>
-    <div class ="footer3">
+    <div class ="footer2">
         <p>&copy; 2022 oiwa
             &nbsp;&nbsp; <a href ="../config/terms.php" class="footer-link">利用規約</a>
             &nbsp;&nbsp; <a href ="../config/privacy.php" class="footer-link">プライバシーポリシー</a>
@@ -359,55 +391,5 @@ foreach($getPref as $pref => $color){
 
     </div>
 </footer> 
-
-
-<script>
-$(function(){
-	$("#textbox").bind("blur", function() {
-		var _textbox = $(this).val();
-		check_textbox(_textbox);
-	});
-});
-
-function check_textbox(str){
-	$("#err_textbox p").remove();
-	var _result = true;
-	var _textbox = $.trim(str);
-
-	if(_textbox.match(/^[  \r\n\t]*$/)){
-		$("#err_textbox").append("<p><i class=\"fa fa-exclamation-triangle\"></i>タイトルを入力してください。</p>");
-		_result = false;
-	}else if(_textbox.length > 30){
-		$("#err_textbox").append("<p><i class=\"fa fa-exclamation-triangle\"></i>タイトルは30文字以内で入力してください。</p>");
-		_result = false;
-	}
-	return _result;
-}
-
-
-$(function(){
-	$("#textarea").bind("blur", function() {
-	var _textarea = $(this).val();
-		check_textarea(_textarea);
-	});
-});
-
-function check_textarea(str){
-	$("#err_textarea p").remove();
-	var _result = true;
-	var _textarea = $.trim(str);
-
-	if(_textarea.length == 0){
-		$("#err_textarea").append("<p><i class=\"fa fa-exclamation-triangle\"></i>本文を入力してください。</p>");
-		_result = false;
-	}else if(_textarea.length > 1000){
-		$("#err_textarea").append("<p><i class=\"fa fa-exclamation-triangle\"></i>本文は1000文字以内で入力してください。</p>");
-		_result = false;
-	}
-	return _result;
-}
-
-</script>
-
 </body>
 </html>

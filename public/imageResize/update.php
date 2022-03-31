@@ -29,10 +29,10 @@ $art->articleValidate($article);
 
 
 //画像アップデートの際に既存データ・リサイズデータ削除
-$del_image = $_POST['deleteImage'];
-$file_dir = '/Applications/MAMP/htdocs/post_travel/images/';
+$del_image = $_POST['deleteImage']; 
+$file_dir = '/home/xs115618/oiwa1105.com/public_html/post_travel/images/';
 $deleteImage = $file_dir.$del_image; 
-$refile_dir = '/Applications/MAMP/htdocs/post_travel/public/imageResize/';
+$refile_dir = '/home/xs115618/oiwa1105.com/public_html/post_travel/public/imageResize/';
 $deleteReImage = $refile_dir.'new'.$del_image;
 
 
