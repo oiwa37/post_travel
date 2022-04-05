@@ -2,6 +2,7 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1.0">
         <title>旅の思い出</title>
         <!-- リセットCSS -->
         <link href="https://unpkg.com/ress/dist/ress.min.css" rel="stylesheet">
@@ -30,19 +31,44 @@
             <a href ="#"><h1>旅の思い出</h1></a>
             <p>日本地図に色を塗ろう</p>
         </div>  
-        <nav class ="gnav">
-            <ol class="menu">
-                <li><a href ="register_form.php">新規登録</a> </li>
-                <li><a href ="login_form.php">ログイン</a> </li>
-                <li>
-                    <form method="POST" action ="login.php">
-                        <input type ="hidden" name="email" value="guest@guest.com">
-                        <input type ="hidden" name="password"  value="111111">
-                        <input type ="submit" name ="guest_login" value ="ゲストログイン" class="top-login">
-                    </form>
-                </li>
-            </ol>
-        </nav> 
+
+        <div class="header-nav">
+            <nav class ="gnav">
+                <ol class="menu">
+                    <li><a href ="register_form.php">新規登録</a> </li>
+                    <li><a href ="login_form.php">ログイン</a> </li>
+                    <li>
+                        <form method="POST" action ="login.php">
+                            <input type ="hidden" name="email" value="guest@guest.com">
+                            <input type ="hidden" name="password"  value="111111">
+                            <input type ="submit" name ="guest_login" value ="ゲストログイン" class="top-login">
+                        </form>
+                    </li>
+                </ol>
+            </nav> 
+        </div>
+
+        <div class="drawer-nav">
+            <input id="drawer-checkbox" type="checkbox">
+            <label id="drawer-icon" for="drawer-checkbox"><span></span></label>
+            <label id="drawer-close" for="drawer-checkbox"></label>
+            <span class="drawer-label">メニュー</span>
+            <div id="drawer-content">
+            <nav class ="gnav">
+                <ol class="menu">
+                    <li><a href ="register_form.php">新規登録</a> </li>
+                    <li><a href ="login_form.php">ログイン</a> </li>
+                    <li>
+                        <form method="POST" action ="login.php">
+                            <input type ="hidden" name="email" value="guest@guest.com">
+                            <input type ="hidden" name="password"  value="111111">
+                            <input type ="submit" name ="guest_login" value ="ゲストログイン" class="top-login">
+                        </form>
+                    </li>
+                </ol>
+            </nav> 
+            </div>
+        </div>
     </div>
 </header>
 
