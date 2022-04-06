@@ -6,6 +6,7 @@ session_start();
 require_once '../functions/functions.php';
 require_once '../classes/article_class.php';
 require_once '../classes/login_class.php';
+require_once '../classes/prefecture_class.php';
 
 
 //ログインしているか判定し、していなければ新規登録画面へ遷移
@@ -42,7 +43,7 @@ $filterData = $art->filter($page, $per_page, $articleData);
 
 //DBから県カラムを取得、県ごとに投稿件数をカウント
 //カウント数に応じて色を代入し、cssに反映させる。
-$pref_class = new Prefecture('aricle');
+$pref_class = new Prefecture('article');
 $pref = [];
 $pref = $pref_class->getPref();
 $pref = array_column($pref,'prefecture'); //「カラム名=>値」の形にする
