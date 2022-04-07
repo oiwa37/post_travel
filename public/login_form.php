@@ -11,7 +11,7 @@ if($result){
 }
 
 $err = $_SESSION;
-
+ 
 //配列を消す(エラーメッセージを一度のみ表示にするため)
 $_SESSION = array();
 //セッションファイルを削除
@@ -23,6 +23,8 @@ session_destroy();
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1.0">
+
         <title>旅の思い出</title>
         <!-- リセットCSS -->
         <link href="https://unpkg.com/ress/dist/ress.min.css" rel="stylesheet">
@@ -90,13 +92,11 @@ session_destroy();
 
 
 <footer>
-    <div class ="footer">
         <p>&copy; 2022 oiwa
             &nbsp;&nbsp; <a href ="../config/terms.php" class="footer-link">利用規約</a>
             &nbsp;&nbsp; <a href ="../config/privacy.php" class="footer-link">プライバシーポリシー</a>
             &nbsp;&nbsp; <a href ="../config/contact.php" class="footer-link">お問い合わせ</a>
             &nbsp;&nbsp; <a href ="../public/top.php" class="footer-link">トップページ</a></p>
-    </div>
 </footer> 
 
 </body>

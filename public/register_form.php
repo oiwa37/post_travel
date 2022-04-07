@@ -7,7 +7,7 @@ require_once '../classes/login_class.php';
 $login = new LoginClass('member');
 $result = $login->checkLogin();
 if($result){
-    header('Location:mypage.php');
+    header('Location:mypage.php'); 
     return;
 }
 
@@ -26,6 +26,8 @@ unset($_SESSION['login_err']);
 <!DOCTYPE html>
 <html>
     <head>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+
         <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
         <title>旅の思い出</title>
         <!-- リセットCSS -->
@@ -105,14 +107,11 @@ unset($_SESSION['login_err']);
 </div>
 
 <footer>
-    <div class ="footer">
         <p>&copy; 2022 oiwa
             &nbsp;&nbsp; <a href ="../config/terms.php" class="footer-link">利用規約</a>
             &nbsp;&nbsp; <a href ="../config/privacy.php" class="footer-link">プライバシーポリシー</a>
             &nbsp;&nbsp; <a href ="../config/contact.php" class="footer-link">お問い合わせ</a>
             &nbsp;&nbsp; <a href ="../public/top.php" class="footer-link">トップページ</a></p>
-
-    </div>
 </footer> 
 
 </body>

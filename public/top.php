@@ -119,24 +119,24 @@
     <div class ="bottom-wrapper">
         <h1>始めてみよう</h1>
             <ol class="top-menu">
-              <li><a href ="register_form.php" class="top-btn">新規登録</a> </li>
-              <li><a href ="login_form.php" class="top-btn">ログイン</a> </li>
-              <li>
-                  <form method="POST" action ="login.php">
-                      <input type ="hidden" name="email" value="guest@guest.com">
-                      <input type ="hidden" name="password"  value="111111">
-                      <input type ="submit" name ="guest_login" value ="ゲストログイン" class="gst-btn">
-                  </form>
-              </li>
-          </ol>
+                <li><a href ="register_form.php" class="top-btn">新規登録</a> </li>
+                <li><a href ="login_form.php" class="top-btn">ログイン</a> </li>
+                <li>
+                    <form method="POST" action ="login.php">
+                        <input type ="hidden" name="email" value="guest@guest.com">
+                        <input type ="hidden" name="password"  value="111111">
+                        <input type ="submit" name ="guest_login" value ="ゲストログイン" class="gst-btn">
+                    </form>
+                </li>
+            </ol>
     </div> 
 </div>
 
 <footer>
-    <p>&copy; 2022 oiwa 
-      &nbsp;&nbsp; <a href ="../config/terms.php" class="footer-link">利用規約</a>
-      &nbsp;&nbsp; <a href ="../config/privacy.php" class="footer-link">プライバシーポリシー</a>
-      &nbsp;&nbsp; <a href ="../config/contact.php" class="footer-link">お問い合わせ</a></p>
+    <p>&copy; 2022 oiwa </br>
+        &nbsp;&nbsp; <a href ="../config/terms.php" class="footer-link">利用規約</a>
+        &nbsp;&nbsp; <a href ="../config/privacy.php" class="footer-link">プライバシーポリシー</a>
+        &nbsp;&nbsp; <a href ="../config/contact.php" class="footer-link">お問い合わせ</a></p>
 </footer> 
 
 </body>

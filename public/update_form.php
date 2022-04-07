@@ -326,7 +326,7 @@ foreach($getPref as $pref => $color){
                 <?php if($post_status === 1) echo "checked";?>>公開
                 <input type="radio" name="post_status" value="2"
                 <?php if($post_status === 2) echo "checked";?>>非公開
-                <input type="submit" value="この内容で更新する" class="post-button"></p>
+                <input type="submit" value="この内容で更新する" class="post-btn"></p>
             </form>
         </div>
         <div class="del-image">
@@ -340,15 +340,13 @@ foreach($getPref as $pref => $color){
 </div>
 
 
-<footer>
-    <div class ="footer3">
+<div class="footer3">
         <p>&copy; 2022 oiwa
             &nbsp;&nbsp; <a href ="../config/terms.php" class="footer-link">利用規約</a>
             &nbsp;&nbsp; <a href ="../config/privacy.php" class="footer-link">プライバシーポリシー</a>
             &nbsp;&nbsp; <a href ="../config/contact.php" class="footer-link">お問い合わせ</a>
             &nbsp;&nbsp; <a href ="../public/top.php" class="footer-link">トップページ</a></p>
-    </div>
-</footer> 
+</div> 
 
 
 <script>

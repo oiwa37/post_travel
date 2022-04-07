@@ -30,7 +30,7 @@ function checkInput($var){
  * @return $title | $text 整形後の文字列もしくはオリジナル
  */
 function textLimit($text){
-    $limit = 50;     //文字数の上限
+    $limit = 43;     //文字数の上限
     if(mb_strlen($text) > $limit) { 
     $title = mb_substr($text,0,$limit);
     echo $title. '…' ;

@@ -292,19 +292,18 @@ foreach($getPref as $pref => $color){
                 <div class ="notYet">
                 <p><?php echo $filterData;?> </p>
                 <p></p><a href ="./form.php" class="newpost-btn">新規投稿をする</a></p>
-            <?php endif; ?>
+                <?php endif; ?>
+                </div>
         </div>
     </div>
 </div>
 
 <footer>
-    <div class ="footer">
         <p>&copy; 2022 oiwa
             &nbsp;&nbsp; <a href ="../config/terms.php" class="footer-link">利用規約</a>
             &nbsp;&nbsp; <a href ="../config/privacy.php" class="footer-link">プライバシーポリシー</a>
             &nbsp;&nbsp; <a href ="../config/contact.php" class="footer-link">お問い合わせ</a>
             &nbsp;&nbsp; <a href ="../public/top.php" class="footer-link">トップページ</a></p>
-    </div>
 </footer> 
 </body>
 </html>
