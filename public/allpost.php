@@ -416,7 +416,8 @@ foreach($cntPref as $key => $val){
 
 }
 
-
+$user_name = h($login_user['name']);
+$login_user = h($login_user['email']);
 
 ?>
 
@@ -424,6 +425,7 @@ foreach($cntPref as $key => $val){
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1.0">
         <title>旅の思い出</title>
         <!-- リセットCSS -->
         <link href="https://unpkg.com/ress/dist/ress.min.css" rel="stylesheet">
@@ -436,35 +438,62 @@ foreach($cntPref as $key => $val){
         <!-- css -->
         <link href="s.css" rel="stylesheet">
     </head>
-<body>       
-<header>  
+<body>     
+<header>      
     <div class ="header">      
         <div class ="header-left">
             <a href ="#"><h1>旅の思い出</h1></a>
             <p>日本地図に色を塗ろう</p>
-        </div>  
-        <nav class ="gnav">
-            <ol class="menu">
-                <li><a href ="form.php">新規作成</a></li>
-                <li><a href ="mypage.php">自分の投稿</a> </li>
-                <li><a href ="allpost.php">みんなの投稿</a> </li>
-                <li><a href ="pictures.php">写真の投稿</a> </li>
-            </ol>
-        </nav>  
-        <div class ="header-right">
-            <div class="user-info">
-                <p>ログインユーザ:<?php echo h($login_user['name'])?></p>
-                <?php $login_user = h($login_user['email'])?>
-                <p>メールアドレス:<?php echo addLimit($login_user)?></p>
-            </div>  
-            <div class ="logout">
-                <form method ="POST" action ="logout.php">
-                    <input type ="submit" name ="logout" value ="&#xf08b;" class="logout-btn">
-                </form>
+        </div> 
+        <div class="header-nav"> 
+            <nav class ="gnav">
+                <ol class="menu">
+                    <li><a href ="form.php">新規作成</a></li>
+                    <li><a href ="mypage.php">自分の投稿</a> </li>
+                    <li><a href ="allpost.php">みんなの投稿</a> </li>
+                    <li><a href ="pictures.php">写真の投稿</a> </li>
+                </ol>
+            </nav>  
+            <div class ="header-right">
+                <div class="user-info">
+                    <p>ログインユーザ:<?php echo userLimit($user_name)?></p>
+                    <p>メールアドレス:<?php echo addLimit($login_user)?></p>
+                </div>  
+                <div class ="logout">
+                    <form method ="POST" action ="logout.php">
+                        <input type ="submit" name ="logout" value =" &#xf08b;" class="logout-btn">
+                    </form>
+                </div>
             </div>
         </div>
+    </div>    
+
+    <div class="drawer-nav">
+        <input id="drawer-checkbox" type="checkbox">
+        <label id="drawer-icon" for="drawer-checkbox"><span></span></label>
+        <label id="drawer-close" for="drawer-checkbox"></label>
+        <span class="drawer-label">メニュー</span>
+        <div id="drawer-content">
+            <nav class ="gnav">
+                <ol class="menu">
+                    <li><a href ="form.php">新規作成</a></li>
+                    <li><a href ="mypage.php">自分の投稿</a> </li>
+                    <li><a href ="allpost.php">みんなの投稿</a> </li>
+                    <li><a href ="pictures.php">写真の投稿</a> </li>
+                </ol>
+            </nav> 
+            <div class="user-info">
+                    <p><?php echo userLimit($user_name)?></p>
+                    <p><?php echo addLimit($login_user)?></p>
+            </div> 
+            <div class ="logout">
+                    <form method ="POST" action ="logout.php">
+                        <input type ="submit" name ="logout" value =" &#xf08b;" class="logout-btn">
+                    </form>
+            </div> 
+        </div>
     </div>
-</header> 
+</header>
     
 <div class ="content">
     <div class = "map">
@@ -607,8 +636,17 @@ foreach($cntPref as $key => $val){
                 <?php $art->paging2($max_page, $page); ?>
             </div>
         </div>
-    </div>
+    </div>    
+    <div class="footer">
+    <p>&copy; 2022 oiwa</br>
+    &nbsp;&nbsp; <a href ="../config/terms.php" class="footer-link">利用規約</a>
+    &nbsp;&nbsp; <a href ="../config/privacy.php" class="footer-link">プライバシーポリシー</a>
+    &nbsp;&nbsp; <a href ="../config/contact.php" class="footer-link">お問い合わせ</a>
+    &nbsp;&nbsp; <a href ="../public/top.php" class="footer-link">トップページ</a></p>
+    </div> 
+
 </div> 
+
 
 <footer>
         <p>&copy; 2022 oiwa

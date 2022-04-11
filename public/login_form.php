@@ -11,7 +11,7 @@ if($result){
 }
 
 $err = $_SESSION;
- 
+
 //配列を消す(エラーメッセージを一度のみ表示にするため)
 $_SESSION = array();
 //セッションファイルを削除
@@ -36,6 +36,8 @@ session_destroy();
         <link href="https://fonts.googleapis.com/css2?family=Kaisei+Decol:wght@700&family=Kiwi+Maru:wght@300&family=Klee+One&display=swap" rel="stylesheet">
         <!-- bootstrap -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+        <!-- javascript -->
+        <script type='text/javascript' src='//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js?ver=1.11.3'></script>
         <!-- css -->
         <link href="login.css" rel="stylesheet">
     </head>
@@ -46,21 +48,46 @@ session_destroy();
             <a href ="top.php"><h1>旅の思い出</h1></a>
             <p>日本地図に色を塗ろう</p>
         </div>  
-        <nav class ="gnav">
-            <ol class="menu">
-                <li><a href ="register_form.php">新規登録</a> </li>
-                <li><a href ="login_form.php">ログイン</a> </li>
-                <li>           
-                <form method="POST" action ="login.php">
-                <input type ="hidden" name="email" value="guest@guest.com">
-                <input type ="hidden" name="password"  value="111111">
-                <input type ="submit" name ="top_login" value ="ゲストログイン" class="top-login">
-            </form></li>
-            </ol>
-        </nav> 
+
+        <div class="header-nav">
+            <nav class ="gnav">
+                <ol class="menu">
+                    <li><a href ="register_form.php">新規登録</a> </li>
+                    <li><a href ="login_form.php">ログイン</a> </li>
+                    <li>
+                        <form method="POST" action ="login.php">
+                            <input type ="hidden" name="email" value="guest@guest.com">
+                            <input type ="hidden" name="password"  value="111111">
+                            <input type ="submit" name ="guest_login" value ="ゲストログイン" class="top-login">
+                        </form>
+                    </li>
+                </ol>
+            </nav> 
+        </div>
+
+        <div class="drawer-nav">
+            <input id="drawer-checkbox" type="checkbox">
+            <label id="drawer-icon" for="drawer-checkbox"><span></span></label>
+            <label id="drawer-close" for="drawer-checkbox"></label>
+            <span class="drawer-label">メニュー</span>
+            <div id="drawer-content">
+            <nav class ="gnav">
+                <ol class="menu">
+                    <li><a href ="register_form.php">新規登録</a> </li>
+                    <li><a href ="login_form.php">ログイン</a> </li>
+                    <li>
+                        <form method="POST" action ="login.php">
+                            <input type ="hidden" name="email" value="guest@guest.com">
+                            <input type ="hidden" name="password"  value="111111">
+                            <input type ="submit" name ="guest_login" value ="ゲストログイン" class="top-login">
+                        </form>
+                    </li>
+                </ol>
+            </nav> 
+            </div>
+        </div>
     </div>
 </header>
-
 
 
 <div class ="login-form">
@@ -92,7 +119,7 @@ session_destroy();
 
 
 <footer>
-        <p>&copy; 2022 oiwa
+        <p>&copy; 2022 oiwa</br>
             &nbsp;&nbsp; <a href ="../config/terms.php" class="footer-link">利用規約</a>
             &nbsp;&nbsp; <a href ="../config/privacy.php" class="footer-link">プライバシーポリシー</a>
             &nbsp;&nbsp; <a href ="../config/contact.php" class="footer-link">お問い合わせ</a>

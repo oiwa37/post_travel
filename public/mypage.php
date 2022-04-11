@@ -106,6 +106,8 @@ foreach($getPref as $pref => $color){
     }
 }
 
+$user_name = h($login_user['name']);
+$login_user = h($login_user['email']);
 
 ?>
 
@@ -113,6 +115,7 @@ foreach($getPref as $pref => $color){
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1.0">
         <title>旅の思い出</title>
         <!-- リセットCSS -->
         <link href="https://unpkg.com/ress/dist/ress.min.css" rel="stylesheet">
@@ -131,32 +134,59 @@ foreach($getPref as $pref => $color){
         <div class ="header-left">
             <a href ="#"><h1>旅の思い出</h1></a>
             <p>日本地図に色を塗ろう</p>
-        </div>  
-        <nav class ="gnav">
-            <ol class="menu">
-                <li><a href ="form.php">新規作成</a></li>
-                <li><a href ="mypage.php">自分の投稿</a> </li>
-                <li><a href ="allpost.php">みんなの投稿</a> </li>
-                <li><a href ="pictures.php">写真の投稿</a> </li>
-            </ol>
-        </nav>  
-        <div class ="header-right">
-            <div class="user-info">
-                <?php $user_name = h($login_user['name'])?>
-                <p>ログインユーザ:<?php echo userLimit($user_name)?></p>
-                <?php $login_user = h($login_user['email'])?>
-                <p>メールアドレス:<?php echo addLimit($login_user)?></p>
-            </div>  
-            <div class ="logout">
-                <form method ="POST" action ="logout.php">
-                    <input type ="submit" name ="logout" value =" &#xf08b;" class="logout-btn">
-                </form>
+        </div> 
+        <div class="header-nav"> 
+            <nav class ="gnav">
+                <ol class="menu">
+                    <li><a href ="form.php">新規作成</a></li>
+                    <li><a href ="mypage.php">自分の投稿</a> </li>
+                    <li><a href ="allpost.php">みんなの投稿</a> </li>
+                    <li><a href ="pictures.php">写真の投稿</a> </li>
+                </ol>
+            </nav>  
+            <div class ="header-right">
+                <div class="user-info">
+                    <p>ログインユーザ:<?php echo userLimit($user_name)?></p>
+                    <p>メールアドレス:<?php echo addLimit($login_user)?></p>
+                </div>  
+                <div class ="logout">
+                    <form method ="POST" action ="logout.php">
+                        <input type ="submit" name ="logout" value =" &#xf08b;" class="logout-btn">
+                    </form>
+                </div>
             </div>
+        </div>
+    </div>    
+
+    <div class="drawer-nav">
+        <input id="drawer-checkbox" type="checkbox">
+        <label id="drawer-icon" for="drawer-checkbox"><span></span></label>
+        <label id="drawer-close" for="drawer-checkbox"></label>
+        <span class="drawer-label">メニュー</span>
+        <div id="drawer-content">
+            <nav class ="gnav">
+                <ol class="menu">
+                    <li><a href ="form.php">新規作成</a></li>
+                    <li><a href ="mypage.php">自分の投稿</a> </li>
+                    <li><a href ="allpost.php">みんなの投稿</a> </li>
+                    <li><a href ="pictures.php">写真の投稿</a> </li>
+                </ol>
+            </nav> 
+            <div class="user-info">
+                    <p><?php echo userLimit($user_name)?></p>
+                    <p><?php echo addLimit($login_user)?></p>
+            </div> 
+            <div class ="logout">
+                    <form method ="POST" action ="logout.php">
+                        <input type ="submit" name ="logout" value =" &#xf08b;" class="logout-btn">
+                    </form>
+            </div> 
         </div>
     </div>
 </header> 
 
 <div class ="main-content" >
+
     <div class = "map">
             <div class="hidden-box">
                 <label for ="label1"><i class="fa-solid fa-circle-question hint-btn"></i></label>
@@ -296,6 +326,13 @@ foreach($getPref as $pref => $color){
                 </div>
         </div>
     </div>
+    <div class="footer">
+    <p>&copy; 2022 oiwa</br>
+    &nbsp;&nbsp; <a href ="../config/terms.php" class="footer-link">利用規約</a>
+    &nbsp;&nbsp; <a href ="../config/privacy.php" class="footer-link">プライバシーポリシー</a>
+    &nbsp;&nbsp; <a href ="../config/contact.php" class="footer-link">お問い合わせ</a>
+    &nbsp;&nbsp; <a href ="../public/top.php" class="footer-link">トップページ</a></p>
+    </div> 
 </div>
 
 <footer>
@@ -305,5 +342,6 @@ foreach($getPref as $pref => $color){
             &nbsp;&nbsp; <a href ="../config/contact.php" class="footer-link">お問い合わせ</a>
             &nbsp;&nbsp; <a href ="../public/top.php" class="footer-link">トップページ</a></p>
 </footer> 
+
 </body>
 </html>
