@@ -242,7 +242,7 @@ foreach($getPref as $pref => $color){
                 <p><?php select_prefecture(); ?></p>
                 <p>本文<div class="err_text" id="err_textarea"></div></p>
                 <!-- cols=幅 rows=行数 -->
-                <p><textarea name="content"   rows="10" class="blog-text" id="textarea"></textarea></p>
+                <p><textarea name="content"  rows="10" class="blog-text" id="textarea"></textarea></p>
                 <p><input name="image" type="file" accept="image/*"></p>
                 <p><input type="radio" name="post_status" value="1" checked >公開
                 <input type="radio" name="post_status" value="2" >非公開
